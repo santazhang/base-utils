@@ -26,7 +26,6 @@ static const char* basename(const char* fpath) {
     if (fpath == nullptr) {
         return nullptr;
     }
-
     const char sep = '/';
     int len = strlen(fpath);
     int idx = len - 1;
@@ -46,12 +45,12 @@ void Log::log_v(int level, int line, const char* file, const char* fmt, va_list 
     if (level <= level_s) {
         const char* filebase = basename(file);
 
-        const int tm_str_len = 80;
-        char tm_str[tm_str_len];
+        const int tm_str_size = 80;
+        char tm_str[tm_str_size];
         time_t now = time(NULL);
         struct tm tm_val;
         localtime_r(&now, &tm_val);
-        strftime(tm_str, tm_str_len - 1, "%F %T", &tm_val);
+        strftime(tm_str, tm_str_size, "%F %T", &tm_val);
         timeval tv;
         gettimeofday(&tv, NULL);
 
@@ -60,12 +59,11 @@ void Log::log_v(int level, int line, const char* file, const char* fmt, va_list 
         if (filebase != nullptr) {
             fprintf(fp_s, "[%s:%d] ", filebase, line);
         }
-
         fprintf(fp_s, "%s.%03d | ", tm_str, tv.tv_usec / 1000);
         vfprintf(fp_s, fmt, args);
         fprintf(fp_s, "\n");
-        fflush(fp_s);
         m_s.unlock();
+        fflush(fp_s);
     }
 }
 

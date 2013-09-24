@@ -1,25 +1,27 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 namespace b0 {
 
 class TestCase {
     const char* group_;
     const char* name_;
-    bool failed_;
+    int failures_;
 public:
-    TestCase(const char* group, const char* name): group_(group), name_(name) { }
+    TestCase(const char* group, const char* name): group_(group), name_(name), failures_(0) { }
     virtual void run() = 0;
     const char* group() { return group_; }
     const char* name() { return name_; }
-    void set_failed(bool failed) { failed_ = failed; }
-    bool failed() { return failed_; }
+    void reset() { failures_ = 0; }
+    void fail();
+    int failures() { return failures_; }
 };
 
 // singleton
 class TestMgr {
-    TestMgr();
+    TestMgr() { }
     static TestMgr* instance_s;
     std::vector<TestCase*> tests_;
 public:
@@ -52,8 +54,9 @@ public:
     { \
         auto va = (a); \
         if (!va) { \
-            set_failed(true); \
-            Log_error("expected true: %s, got false", #a); \
+            fail(); \
+            std::cout << "    *** expected true: '" << #a << "', got false (" \
+                << __FILE__ << ':' << __LINE__  << ')' << std::endl; \
         } \
     }
 
@@ -61,8 +64,9 @@ public:
     { \
         auto va = (a); \
         if (va) { \
-            set_failed(true); \
-            Log_error("expected false: %s, got true", #a); \
+            fail(); \
+            std::cout << "    *** expected false: '" << #a << "', got true (" \
+                << __FILE__ << ':' << __LINE__  << ')' << std::endl; \
         } \
     }
 
@@ -71,8 +75,9 @@ public:
         auto va = (a); \
         auto vb = (b); \
         if (va != vb) { \
-            set_failed(true); \
-            Log_error("expected equal: %s == %s", #a, #b); \
+            fail(); \
+            std::cout << "    *** expected equal: '" << #a << " == " << #b << "', got " << va << " != " << vb << " (" \
+                << __FILE__ << ':' << __LINE__  << ')' << std::endl; \
         } \
     }
 
@@ -81,8 +86,9 @@ public:
         auto va = (a); \
         auto vb = (b); \
         if (va == vb) { \
-            set_failed(true); \
-            Log_error("expected not equal: %s != %s", #a, #b); \
+            fail(); \
+            std::cout << "    *** expected not equal: '" << #a << " != " << #b << "', got " << va << " == " << vb << " (" \
+                << __FILE__ << ':' << __LINE__  << ')' << std::endl; \
         } \
     }
 

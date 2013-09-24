@@ -31,4 +31,4 @@ def build(bld):
     def _prog(source, target, includes=".", use="b0 PTHREAD"):
         bld.program(source=source, target=target, includes=includes, use=use)
 
-    _prog("test/t_unittest.cc", "t_unittest")
+    _prog(bld.path.ant_glob("test/test*.cc"), "testharness")
