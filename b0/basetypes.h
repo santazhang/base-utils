@@ -64,4 +64,16 @@ public:
     }
 };
 
+class Timer {
+public:
+    Timer() { reset(); }
+    void start();
+    void stop();
+    void reset();
+    double elapsed() const;
+private:
+    struct timeval begin_;
+    struct timeval end_;
+};
+
 } // namespace b0
