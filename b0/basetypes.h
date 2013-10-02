@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 #include <inttypes.h>
 
 #include "defs.h"
@@ -74,6 +75,18 @@ public:
 private:
     struct timeval begin_;
     struct timeval end_;
+};
+
+class Rand: public NoCopy {
+    std::mt19937 rand_;
+public:
+    Rand();
+    std::mt19937::result_type next() {
+        return rand_();
+    }
+    std::mt19937::result_type operator() () {
+        return rand_();
+    }
 };
 
 } // namespace b0
