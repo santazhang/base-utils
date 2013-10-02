@@ -2,6 +2,8 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include "misc.h"
+
 #include "threading.h"
 #include "logging.h"
 
@@ -45,21 +47,15 @@ void Log::log_v(int level, int line, const char* file, const char* fmt, va_list 
     if (level <= level_s) {
         const char* filebase = basename(file);
 
-        const int tm_str_size = 80;
-        char tm_str[tm_str_size];
-        time_t now = time(NULL);
-        struct tm tm_val;
-        localtime_r(&now, &tm_val);
-        strftime(tm_str, tm_str_size, "%F %T", &tm_val);
-        timeval tv;
-        gettimeofday(&tv, NULL);
+        char now_str[TIME_NOW_STR_SIZE];
+        time_now_str(now_str);
 
         m_s.lock();
         fprintf(fp_s, "%c ", indicator[level]);
         if (filebase != nullptr) {
             fprintf(fp_s, "[%s:%d] ", filebase, line);
         }
-        fprintf(fp_s, "%s.%03d | ", tm_str, tv.tv_usec / 1000);
+        fprintf(fp_s, "%s | ", now_str);
         vfprintf(fp_s, fmt, args);
         fprintf(fp_s, "\n");
         m_s.unlock();
