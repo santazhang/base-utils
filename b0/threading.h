@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <functional>
 #include <pthread.h>
 
 #include "basetypes.h"
