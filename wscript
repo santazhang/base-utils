@@ -5,8 +5,9 @@ import os
 import sys
 from waflib import Logs
 
+# use clang++ as default compiler (for c++11 support on mac)
 if sys.platform == 'darwin' and not os.environ.has_key("CXX"):
-    os.environ["CXX"] = "clang++"   # use clang++ as default compiler (for c++11 support on mac)
+    os.environ["CXX"] = "clang++"
 
 def options(opt):
     opt.load("compiler_cxx")
