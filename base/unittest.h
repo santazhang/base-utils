@@ -27,7 +27,7 @@ class TestMgr {
 public:
     static TestMgr* instance();
     TestCase* reg(TestCase*);
-    void run(int argc, char* argv[]);
+    int run(int argc, char* argv[]);
 };
 
 } // namespace base

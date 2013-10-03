@@ -25,7 +25,7 @@ TestCase* TestMgr::reg(TestCase* t) {
     return t;
 }
 
-void TestMgr::run(int argc, char* argv[]) {
+int TestMgr::run(int argc, char* argv[]) {
     // TODO only run selected tests
     int failures = 0;
     int passed = 0;
@@ -40,6 +40,7 @@ void TestMgr::run(int argc, char* argv[]) {
         }
     }
     printf("----\n%d/%lu passed, %d failures\n", passed, tests_.size(), failures);
+    return failures;
 }
 
 } // namespace base
