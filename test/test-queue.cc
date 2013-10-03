@@ -24,11 +24,8 @@ TEST(threading, queue) {
     // producer
     for (int i = 0; i < n_producer; i++) {
         tpool->run_async([&q, this, &pop_ctr, n_op] {
-            int last_value = -1;
             while (pop_ctr.next() < n_op) {
-                int newly_poped = q.pop();
-                EXPECT_TRUE(newly_poped > last_value);
-                last_value = newly_poped;
+                q.pop();
             }
         });
     }
