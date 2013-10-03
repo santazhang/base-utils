@@ -46,11 +46,9 @@ void Log::log_v(int level, int line, const char* file, const char* fmt, va_list 
     assert(level <= Log::DEBUG);
     if (level <= level_s) {
         const char* filebase = basename(file);
-
         char now_str[TIME_NOW_STR_SIZE];
-        time_now_str(now_str);
-
         m_s.lock();
+        time_now_str(now_str);
         fprintf(fp_s, "%c ", indicator[level]);
         if (filebase != nullptr) {
             fprintf(fp_s, "[%s:%d] ", filebase, line);
