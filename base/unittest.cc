@@ -6,7 +6,7 @@ namespace base {
 
 void TestCase::fail() {
     if (failures_ == 0) {
-        printf("    fail\n");
+        printf("  fail\n");
     }
     failures_++;
 }
@@ -30,11 +30,12 @@ void TestMgr::run(int argc, char* argv[]) {
     int failures = 0;
     int passed = 0;
     for (auto t : tests_) {
-        printf("%s/%s", t->group(), t->name());
+        printf("%s/%s  ", t->group(), t->name());
+        fflush(stdout);
         t->run();
         failures += t->failures();
         if (t->failures() == 0) {
-            printf("    pass\n");
+            printf("  pass\n");
             passed++;
         }
     }

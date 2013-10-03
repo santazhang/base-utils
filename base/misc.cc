@@ -17,7 +17,7 @@ static void make_int(char* str, int val, int digits) {
 }
 
 // format time
-// inspired by the TPC-C benchmark for Evan Jones
+// inspired by the TPC-C benchmark from Evan Jones
 // strftime is slow because it ends up consulting timezone info
 // also, snprintf is slow
 void time_now_str(char* now) {
