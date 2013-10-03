@@ -19,7 +19,7 @@ def configure(conf):
     conf.env.LIB_PTHREAD = 'pthread'
 
 def build(bld):
-    bld.stlib(source=bld.path.ant_glob("b0/*.cc"), target="b0", includes="b0", lib="pthread")
+    bld.stlib(source=bld.path.ant_glob("b0/*.cc"), target="b0", includes="b0", use="PTHREAD")
     bld.program(source=bld.path.ant_glob("test/test*.cc"), target="testharness", includes=".", use="b0 PTHREAD")
 
 #
