@@ -2,13 +2,13 @@
 
 #include "threading.h"
 
-#define Log_debug(msg, ...) ::b0::Log::debug(__LINE__, __FILE__, msg, ## __VA_ARGS__)
-#define Log_info(msg, ...) ::b0::Log::info(__LINE__, __FILE__, msg, ## __VA_ARGS__)
-#define Log_warn(msg, ...) ::b0::Log::warn(__LINE__, __FILE__, msg, ## __VA_ARGS__)
-#define Log_error(msg, ...) ::b0::Log::error(__LINE__, __FILE__, msg, ## __VA_ARGS__)
-#define Log_fatal(msg, ...) ::b0::Log::fatal(__LINE__, __FILE__, msg, ## __VA_ARGS__)
+#define Log_debug(msg, ...) ::base::Log::debug(__LINE__, __FILE__, msg, ## __VA_ARGS__)
+#define Log_info(msg, ...) ::base::Log::info(__LINE__, __FILE__, msg, ## __VA_ARGS__)
+#define Log_warn(msg, ...) ::base::Log::warn(__LINE__, __FILE__, msg, ## __VA_ARGS__)
+#define Log_error(msg, ...) ::base::Log::error(__LINE__, __FILE__, msg, ## __VA_ARGS__)
+#define Log_fatal(msg, ...) ::base::Log::fatal(__LINE__, __FILE__, msg, ## __VA_ARGS__)
 
-namespace b0 {
+namespace base {
 
 class Log {
     static int level_s;
@@ -40,4 +40,4 @@ public:
     static void debug(const char* fmt, ...);
 };
 
-} // namespace b0
+} // namespace base

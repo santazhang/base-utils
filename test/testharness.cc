@@ -1,6 +1,6 @@
-#include "b0/b0all.h"
+#include "base/all.h"
 
-using namespace b0;
+using namespace base;
 
 TEST(demo, expect_eq) {
     EXPECT_EQ(2, 2 + 0);

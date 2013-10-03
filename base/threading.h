@@ -22,7 +22,7 @@
 #define Pthread_create(th, attr, func, arg) verify(pthread_create(th, attr, func, arg) == 0)
 #define Pthread_join(th, attr) verify(pthread_join(th, attr) == 0)
 
-namespace b0 {
+namespace base {
 
 class Lockable: public NoCopy {
 public:
@@ -182,4 +182,4 @@ public:
     int run_async(const std::function<void()>&);
 };
 
-} // namespace b0
+} // namespace base

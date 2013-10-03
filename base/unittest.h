@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 
-namespace b0 {
+namespace base {
 
 class TestCase {
     const char* group_;
@@ -30,13 +30,13 @@ public:
     void run(int argc, char* argv[]);
 };
 
-} // namespace b0
+} // namespace base
 
 #define TEST_CLASS_NAME(group, name) \
     TestCase_ ## group ## _ ## name
 
 #define TEST(group, name) \
-    class TEST_CLASS_NAME(group, name) : public ::b0::TestCase { \
+    class TEST_CLASS_NAME(group, name) : public ::base::TestCase { \
         static TestCase* me_s; \
     public: \
         TEST_CLASS_NAME(group, name)(); \
@@ -44,11 +44,11 @@ public:
     }; \
     TEST_CLASS_NAME(group, name)::TEST_CLASS_NAME(group, name)(): \
         TestCase(#group, #name) { } \
-    ::b0::TestCase* TEST_CLASS_NAME(group, name)::me_s = \
-        ::b0::TestMgr::instance()->reg(new TEST_CLASS_NAME(group, name)); \
+    ::base::TestCase* TEST_CLASS_NAME(group, name)::me_s = \
+        ::base::TestMgr::instance()->reg(new TEST_CLASS_NAME(group, name)); \
     void TEST_CLASS_NAME(group, name)::run()
 
-#define RUN_TESTS(argc, argv) ::b0::TestMgr::instance()->run(argc, argv);
+#define RUN_TESTS(argc, argv) ::base::TestMgr::instance()->run(argc, argv);
 
 #define EXPECT_TRUE(a) \
     { \

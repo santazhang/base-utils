@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace b0 {
+namespace base {
 
 struct start_thread_pool_args {
     ThreadPool* thrpool;
@@ -104,4 +104,4 @@ void ThreadPool::run_thread(int id_in_pool) {
     }
 }
 
-} // namespace b0
+} // namespace base

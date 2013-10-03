@@ -5,7 +5,7 @@
 
 #include "defs.h"
 
-namespace b0 {
+namespace base {
 
 typedef int32_t i32;
 typedef int64_t i64;
@@ -89,4 +89,4 @@ public:
     }
 };
 
-} // namespace b0
+} // namespace base

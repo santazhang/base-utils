@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 
-namespace b0 {
+namespace base {
 
 inline uint64_t rdtsc() {
     uint32_t hi, lo;
@@ -14,4 +14,4 @@ inline uint64_t rdtsc() {
 #define TIME_NOW_STR_SIZE 24
 void time_now_str(char* now);
 
-} // namespace b0
+} // namespace base

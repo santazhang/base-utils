@@ -2,7 +2,7 @@
 
 #include "unittest.h"
 
-namespace b0 {
+namespace base {
 
 void TestCase::fail() {
     if (failures_ == 0) {
@@ -41,4 +41,4 @@ void TestMgr::run(int argc, char* argv[]) {
     printf("----\n%d/%lu passed, %d failures\n", passed, tests_.size(), failures);
 }
 
-} // namespace b0
+} // namespace base

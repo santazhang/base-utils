@@ -2,7 +2,7 @@
 
 #include "basetypes.h"
 
-namespace b0 {
+namespace base {
 
 void Timer::start() {
     gettimeofday(&begin_, nullptr);
@@ -29,4 +29,4 @@ Rand::Rand() {
     rand_.seed(now.tv_sec + now.tv_usec + (long long) pthread_self() + (long long) this);
 }
 
-} // namespace b0
+} // namespace base

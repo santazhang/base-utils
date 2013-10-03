@@ -7,7 +7,7 @@
 #include "threading.h"
 #include "logging.h"
 
-namespace b0 {
+namespace base {
 
 int Log::level_s = Log::DEBUG;
 FILE* Log::fp_s = stdout;
@@ -143,4 +143,4 @@ void Log::debug(const char* fmt, ...) {
     va_end(args);
 }
 
-} // namespace b0
+} // namespace base

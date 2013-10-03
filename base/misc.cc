@@ -4,7 +4,7 @@
 
 #include "misc.h"
 
-namespace b0 {
+namespace base {
 
 static void make_int(char* str, int val, int digits) {
     char* p = str + digits;
@@ -42,4 +42,4 @@ void time_now_str(char* now) {
     now[23] = '\0';
 }
 
-} // namespace b0
+} // namespace base
