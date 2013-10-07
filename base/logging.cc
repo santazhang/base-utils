@@ -3,7 +3,6 @@
 #include <sys/time.h>
 
 #include "misc.h"
-
 #include "threading.h"
 #include "logging.h"
 

@@ -1,13 +1,11 @@
 #include <stdio.h>
 
 #include "unittest.h"
+#include "logging.h"
 
 namespace base {
 
 void TestCase::fail() {
-    if (failures_ == 0) {
-        printf("  fail\n");
-    }
     failures_++;
 }
 
@@ -30,16 +28,18 @@ int TestMgr::run(int argc, char* argv[]) {
     int failures = 0;
     int passed = 0;
     for (auto t : tests_) {
-        printf("%s/%s  ", t->group(), t->name());
-        fflush(stdout);
+        Log::info("--> starting test: %s/%s", t->group(), t->name());
+        // TODO run tests in parallel, and in subprocesses
         t->run();
         failures += t->failures();
         if (t->failures() == 0) {
-            printf("  pass\n");
+            Log::info("<-- passed test: %s/%s", t->group(), t->name());
             passed++;
+        } else {
+            Log::error("X-- failed test: %s/%s", t->group(), t->name());
         }
     }
-    printf("----\n%d/%lu passed, %d failures\n", passed, tests_.size(), failures);
+    Log::info("%d/%lu passed, %d failures\n", passed, tests_.size(), failures);
     return failures;
 }
 
