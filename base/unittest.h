@@ -27,6 +27,8 @@ class TestMgr {
 public:
     static TestMgr* instance();
     TestCase* reg(TestCase*);
+    int parse_args(int argc, char* argv[], int* n_proc, bool* show_help, std::vector<TestCase*>* selected);
+    void matched_tests(const char* match, std::vector<TestCase*>* matched);
     int run(int argc, char* argv[]);
 };
 
