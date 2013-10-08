@@ -38,6 +38,16 @@ TEST(strop, strsplit) {
     EXPECT_EQ(split[0], "hello");
     EXPECT_EQ(split[1], "world");
 
+    split = strsplit("hello/world", '/');
+    EXPECT_EQ(split.size(), 2);
+    EXPECT_EQ(split[0], "hello");
+    EXPECT_EQ(split[1], "world");
+
+    split = strsplit("hello/world ", '/');
+    EXPECT_EQ(split.size(), 2);
+    EXPECT_EQ(split[0], "hello");
+    EXPECT_EQ(split[1], "world ");
+
     split = strsplit("      ");
     EXPECT_EQ(split.size(), 0);
 
