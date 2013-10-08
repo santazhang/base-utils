@@ -13,7 +13,7 @@ TEST(strop, endswith) {
 }
 
 TEST(strop, strsplit) {
-    std::vector<std::string> split = strsplit("hello world");
+    std::vector<std::string>&& split = strsplit("hello world");
     EXPECT_EQ(split.size(), 2);
     EXPECT_EQ(split[0], "hello");
     EXPECT_EQ(split[1], "world");
