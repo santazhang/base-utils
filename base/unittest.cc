@@ -42,19 +42,14 @@ void TestMgr::matched_tests(const char* match, std::vector<TestCase*>* matched) 
     }
 }
 
-int TestMgr::parse_args(int argc, char* argv[], int* n_proc, bool* show_help, std::vector<TestCase*>* selected) {
+int TestMgr::parse_args(int argc, char* argv[], bool* show_help, std::vector<TestCase*>* selected) {
     *show_help = false;
-    *n_proc = 1;
     char* select = nullptr;
     char* skip = nullptr;
     std::vector<TestCase*> match;
     for (int i = 1; i < argc; i++) {
         if (streq(argv[i], "-h") || streq(argv[i], "--help")) {
             *show_help = true;
-        } else if (streq(argv[i], "-p")) {
-            if (i == argc - 1 || (*n_proc = atoi(argv[i + 1])) <= 0) {
-                return 1;
-            }
         } else if (startswith(argv[i], "--select=")) {
             select = argv[i] + strlen("--select=");
             matched_tests(select, &match);
@@ -91,11 +86,10 @@ int TestMgr::parse_args(int argc, char* argv[], int* n_proc, bool* show_help, st
 
 int TestMgr::run(int argc, char* argv[]) {
     bool show_help;
-    int n_proc;
     std::vector<TestCase*> selected;
-    int r = parse_args(argc, argv, &n_proc, &show_help, &selected);
+    int r = parse_args(argc, argv, &show_help, &selected);
     if (r != 0 || show_help) {
-        printf("usage: %s [-h|--help] [-p n_proc] [--select=group_x/test_y,group_z|--skip=group_x/test_y,group_z]\n", argv[0]);
+        printf("usage: %s [-h|--help] [--select=group_x/test_y,group_z|--skip=group_x/test_y,group_z]\n", argv[0]);
         return r;
     }
 
@@ -109,7 +103,6 @@ int TestMgr::run(int argc, char* argv[]) {
     }
     for (auto t : selected) {
         Log::info("--> starting test: %s/%s", t->group(), t->name());
-        // TODO run tests in parallel, and in subprocesses
         t->run();
         failures += t->failures();
         if (t->failures() == 0) {
