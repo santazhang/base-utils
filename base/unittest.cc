@@ -25,7 +25,21 @@ TestCase* TestMgr::reg(TestCase* t) {
 }
 
 void TestMgr::matched_tests(const char* match, std::vector<TestCase*>* matched) {
-    // TODO
+    std::vector<std::string>&& split = strsplit(match, ',');
+    matched->clear();
+    for (auto t: tests_) {
+        for (auto& s: split) {
+            if (s.find('/') != std::string::npos) {
+                if (t->group() + std::string("/") + t->name() == s) {
+                    matched->push_back(t);
+                }
+            } else {
+                if (t->group() == s) {
+                    matched->push_back(t);
+                }
+            }
+        }
+    }
 }
 
 int TestMgr::parse_args(int argc, char* argv[], int* n_proc, bool* show_help, std::vector<TestCase*>* selected) {
@@ -54,9 +68,20 @@ int TestMgr::parse_args(int argc, char* argv[], int* n_proc, bool* show_help, st
     if (select == nullptr && skip == nullptr) {
         *selected = tests_;
     } else if (select != nullptr && skip == nullptr) {
-        selected->clear();
+        *selected = match;
     } else if (select == nullptr && skip != nullptr) {
-        *selected = tests_;
+        selected->clear();
+        for (auto t: tests_) {
+            bool select = true;
+            for (auto m: match) {
+                if (t == m) {
+                    select = false;
+                }
+            }
+            if (select) {
+                selected->push_back(t);
+            }
+        }
     } else { // select != nullptr && skip != nullptr
         printf("please provide either --select or --skip, not both\n");
         return 1;
@@ -70,7 +95,7 @@ int TestMgr::run(int argc, char* argv[]) {
     std::vector<TestCase*> selected;
     int r = parse_args(argc, argv, &n_proc, &show_help, &selected);
     if (r != 0 || show_help) {
-        printf("usage: %s [-h|--help] [-p n_proc] [--select=a/b,c/d|--skip=a/b,c/d]\n", argv[0]);
+        printf("usage: %s [-h|--help] [-p n_proc] [--select=group_x/test_y,group_z|--skip=group_x/test_y,group_z]\n", argv[0]);
         return r;
     }
 
