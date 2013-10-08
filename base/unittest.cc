@@ -42,14 +42,17 @@ void TestMgr::matched_tests(const char* match, std::vector<TestCase*>* matched) 
     }
 }
 
-int TestMgr::parse_args(int argc, char* argv[], bool* show_help, std::vector<TestCase*>* selected) {
+int TestMgr::parse_args(int argc, char* argv[], bool* show_help, bool* list_tests, std::vector<TestCase*>* selected) {
     *show_help = false;
+    *list_tests = false;
     char* select = nullptr;
     char* skip = nullptr;
     std::vector<TestCase*> match;
     for (int i = 1; i < argc; i++) {
         if (streq(argv[i], "-h") || streq(argv[i], "--help")) {
             *show_help = true;
+        } else if (streq(argv[i], "-l") || streq(argv[i], "--list")) {
+            *list_tests = true;
         } else if (startswith(argv[i], "--select=")) {
             select = argv[i] + strlen("--select=");
             matched_tests(select, &match);
@@ -86,10 +89,17 @@ int TestMgr::parse_args(int argc, char* argv[], bool* show_help, std::vector<Tes
 
 int TestMgr::run(int argc, char* argv[]) {
     bool show_help;
+    bool list_tests;
     std::vector<TestCase*> selected;
-    int r = parse_args(argc, argv, &show_help, &selected);
+    int r = parse_args(argc, argv, &show_help, &list_tests, &selected);
     if (r != 0 || show_help) {
-        printf("usage: %s [-h|--help] [--select=group_x/test_y,group_z|--skip=group_x/test_y,group_z]\n", argv[0]);
+        printf("usage: %s [-h|--help] [-l|--list] [--select,skip=group_x/test_y,group_z]\n", argv[0]);
+        return r;
+    }
+    if (list_tests) {
+        for (auto t : selected) {
+            printf("%s/%s\n", t->group(), t->name());
+        }
         return r;
     }
 
