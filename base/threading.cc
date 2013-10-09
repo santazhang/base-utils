@@ -37,7 +37,13 @@ ThreadPool::~ThreadPool() {
     for (int i = 0; i < n_; i++) {
         Pthread_join(th_[i], nullptr);
     }
-    // TODO probably need to check if there's jobs not executed yet in queues
+    // need to check if there's jobs not executed yet in queues
+    for (int i = 0; i < n_; i++) {
+        function<void()>* job;
+        while (q_[i].try_pop(&job)) {
+            (*job)();
+        }
+    }
     delete[] th_;
     delete[] q_;
 }
@@ -53,55 +59,74 @@ int ThreadPool::run_async(const std::function<void()>& f) {
 }
 
 void ThreadPool::run_thread(int id_in_pool) {
-    int64_t cycle_last_item_found = rdtsc();
-    list<function<void()>*> jobs;
     struct timespec sleep_req;
-    sleep_req.tv_nsec = 1;
+    sleep_req.tv_nsec = 200 * 1000;
     sleep_req.tv_sec = 0;
+    int stage = 0;
 
-    for (;;) {
-        if (sleep_req.tv_nsec > 1) {
-          nanosleep(&sleep_req, NULL);
+    // randomized stealing order
+    int* steal_order = new int[n_];
+    for (int i = 0; i < n_; i++) {
+        steal_order[i] = i;
+    }
+    Rand r;
+    for (int i = 0; i < n_ - 1; i++) {
+        int j = r.next(i, n_);
+        if (j != i) {
+            int t = steal_order[j];
+            steal_order[j] = steal_order[i];
+            steal_order[i] = t;
         }
+    }
 
-        int64_t cycle_now = rdtsc();
+    // sleep: 1us ~ 1000us
+    // fallback stages: pop -> sleep -> pop -> steal -> sleep
+    // succeed: sleep - 1
+    // failure: sleep + 10
+    while (!should_stop_) {
+        function<void()>* job = nullptr;
 
-        // How long should a thread wait before stealing from
-        // other queues.
-        static const int kStealCycles = 10 * 1000 * 1000;
-
-        if (cycle_now - cycle_last_item_found > kStealCycles) {
-            // start checking other queues
-            // TODO randomize each worker thread's stealing order
-            for (auto i = 0; i < n_; ++i) {
-                q_[i].pop_many(&jobs, 1);
-                if (!jobs.empty()) {
-                    break;
+        switch(stage) {
+        case 0:
+        case 2:
+            if (q_[id_in_pool].try_pop(&job)) {
+                stage = 0;
+            } else {
+                stage++;
+            }
+            break;
+        case 1:
+        case 4:
+            nanosleep(&sleep_req, NULL);
+            stage++;
+            break;
+        case 3:
+            for (int i = 0; i < n_; i++) {
+                if (steal_order[i] != id_in_pool) {
+                    if (q_[steal_order[i]].try_pop(&job)) {
+                        stage = 0;
+                    }
                 }
             }
-        } else {
-            q_[id_in_pool].pop_many(&jobs, 1);
-        }
-
-        if (jobs.empty()) {
-            if (should_stop_) {
-                break;
+            if (stage != 0) {
+                stage++;
             }
-            sleep_req.tv_nsec = std::min(1000000L, sleep_req.tv_nsec * 2);
-            continue;
+            break;
         }
 
-        sleep_req.tv_nsec = 1;
-
-        while (!jobs.empty()) {
-            auto& f = jobs.front();
-            (*f)();
-            delete f;
-            jobs.pop_front();
+        if (stage == 0) {
+            (*job)();
+            delete job;
+            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec - 1000, 1000, 1000 * 1000);
+        } else {
+            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec + 10 * 1000, 1000, 1000 * 1000);
         }
 
-        cycle_last_item_found = rdtsc();
+        if (stage >= 5) {
+            stage = 0;
+        }
     }
+    delete[] steal_order;
 }
 
 } // namespace base

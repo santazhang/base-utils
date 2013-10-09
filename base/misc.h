@@ -4,6 +4,8 @@
 
 namespace base {
 
+#define clamp(v, lower, upper) ((v) < (lower) ? (lower) : ((v) > (upper) ? (upper) : (v)))
+
 inline uint64_t rdtsc() {
     uint32_t hi, lo;
     __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));

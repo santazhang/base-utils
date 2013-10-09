@@ -84,6 +84,10 @@ public:
     std::mt19937::result_type next() {
         return rand_();
     }
+    // [lower, upper)
+    std::mt19937::result_type next(int lower, int upper) {
+        return lower + rand_() % (upper - lower);
+    }
     std::mt19937::result_type operator() () {
         return rand_();
     }

@@ -134,20 +134,16 @@ public:
         Pthread_mutex_unlock(&m_);
     }
 
-    void pop_many(std::list<T>* out, int count) {
+    bool try_pop(T* t) {
+        bool ret = false;
         Pthread_mutex_lock(&m_);
-        if (q_->empty()) {
-          Pthread_mutex_unlock(&m_);
-          return;
+        if (!q_->empty()) {
+            ret = true;
+            *t = q_->front();
+            q_->pop_front();
         }
-
-        while (count > 0) {
-          out->push_back(q_->front());
-          q_->pop_front();
-          --count;
-        }
-
         Pthread_mutex_unlock(&m_);
+        return ret;
     }
 
     T pop() {

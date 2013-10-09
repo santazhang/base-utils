@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include "base/all.h"
 
 using namespace base;
@@ -15,4 +17,12 @@ TEST(threading, threadpool) {
     t.stop();
     Log::info("ThreadPool(%d) took %lf sec to execute %d nop jobs, that's %.2lf usec each",
         n_thread, t.elapsed(), n_ops, t.elapsed() * 1e6 / n_ops);
+}
+
+TEST(threading, empty_threadpool) {
+    int n_thread = 100;
+    ThreadPool* tpool = new ThreadPool(n_thread);
+    Log::info("starting ThreadPool(%d) with no jobs, wait for 10 seconds. CPU should be low.", n_thread);
+    sleep(10);
+    tpool->release();
 }
