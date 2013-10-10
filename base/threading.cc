@@ -65,8 +65,8 @@ int ThreadPool::run_async(const std::function<void()>& f) {
 void ThreadPool::run_thread(int id_in_pool) {
     struct timespec sleep_req;
     const int min_sleep_nsec = 1000;  // 1us
-    const int max_sleep_nsec = 10 * 1000 * 1000;  // 10ms
-    sleep_req.tv_nsec = 200 * 1000;  // 200us
+    const int max_sleep_nsec = 1000 * 1000;  // 1ms
+    sleep_req.tv_nsec = 1000;  // 1us
     sleep_req.tv_sec = 0;
     int stage = 0;
 
