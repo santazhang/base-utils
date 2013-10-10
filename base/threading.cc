@@ -63,6 +63,13 @@ int ThreadPool::run_async(const std::function<void()>& f) {
 }
 
 void ThreadPool::run_thread(int id_in_pool) {
+    struct timespec sleep_req;
+    const int min_sleep_nsec = 1000;  // 1us
+    const int max_sleep_nsec = 10 * 1000 * 1000;  // 10ms
+    sleep_req.tv_nsec = 200 * 1000;  // 200us
+    sleep_req.tv_sec = 0;
+    int stage = 0;
+
     // randomized stealing order
     int* steal_order = new int[n_];
     for (int i = 0; i < n_; i++) {
@@ -78,29 +85,55 @@ void ThreadPool::run_thread(int id_in_pool) {
         }
     }
 
+    // fallback stages: try_pop -> sleep -> try_pop -> steal -> pop
+    // succeed: sleep - 1
+    // failure: sleep + 10
     for (;;) {
-        // fallback stages: try_pop -> steal -> pop
         function<void()>* job = nullptr;
-        bool got_job = q_[id_in_pool].try_pop(&job);
-        if (!got_job) {
+
+        switch(stage) {
+        case 0:
+        case 2:
+            if (q_[id_in_pool].try_pop(&job)) {
+                stage = 0;
+            } else {
+                stage++;
+            }
+            break;
+        case 1:
+            nanosleep(&sleep_req, NULL);
+            stage++;
+            break;
+        case 3:
             for (int i = 0; i < n_; i++) {
                 if (steal_order[i] != id_in_pool) {
                     // just don't steal other thread's death pill, otherwise they won't die
                     if (q_[steal_order[i]].try_pop_but_ignore(&job, nullptr)) {
-                        got_job = true;
+                        stage = 0;
                         break;
                     }
                 }
             }
-        }
-        if (!got_job) {
+            if (stage != 0) {
+                stage++;
+            }
+            break;
+        case 4:
             job = q_[id_in_pool].pop();
-        }
-        if (job == nullptr) {
+            stage = 0;
             break;
         }
-        (*job)();
-        delete job;
+
+        if (stage == 0) {
+            if (job == nullptr) {
+                break;
+            }
+            (*job)();
+            delete job;
+            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec - 1000, min_sleep_nsec, max_sleep_nsec);
+        } else {
+            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec + 10 * 1000, min_sleep_nsec, max_sleep_nsec);
+        }
     }
     delete[] steal_order;
 }
