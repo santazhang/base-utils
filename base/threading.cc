@@ -1,5 +1,6 @@
 #include <functional>
 
+#include "logging.h"
 #include "misc.h"
 #include "threading.h"
 
@@ -35,13 +36,18 @@ ThreadPool::ThreadPool(int n /* =... */): n_(n), should_stop_(false) {
 ThreadPool::~ThreadPool() {
     should_stop_ = true;
     for (int i = 0; i < n_; i++) {
+        q_[i].push(nullptr);    // death pill
+    }
+    for (int i = 0; i < n_; i++) {
         Pthread_join(th_[i], nullptr);
     }
     // need to check if there's jobs not executed yet in queues
     for (int i = 0; i < n_; i++) {
         function<void()>* job;
         while (q_[i].try_pop(&job)) {
-            (*job)();
+            if (job != nullptr) {
+                (*job)();
+            }
         }
     }
     delete[] th_;
@@ -60,7 +66,9 @@ int ThreadPool::run_async(const std::function<void()>& f) {
 
 void ThreadPool::run_thread(int id_in_pool) {
     struct timespec sleep_req;
-    sleep_req.tv_nsec = 200 * 1000;
+    const int min_sleep_nsec = 1000; // 1us
+    const int max_sleep_nsec = 10 * 1000 * 1000; // 10ms
+    sleep_req.tv_nsec = 200 * 1000; // 200us
     sleep_req.tv_sec = 0;
     int stage = 0;
 
@@ -79,11 +87,10 @@ void ThreadPool::run_thread(int id_in_pool) {
         }
     }
 
-    // sleep: 1us ~ 1000us
-    // fallback stages: pop -> sleep -> pop -> steal -> sleep
+    // fallback stages: try_pop -> sleep -> try_pop -> steal -> pop
     // succeed: sleep - 1
     // failure: sleep + 10
-    while (!should_stop_) {
+    for (;;) {
         function<void()>* job = nullptr;
 
         switch(stage) {
@@ -96,15 +103,15 @@ void ThreadPool::run_thread(int id_in_pool) {
             }
             break;
         case 1:
-        case 4:
             nanosleep(&sleep_req, NULL);
             stage++;
             break;
         case 3:
             for (int i = 0; i < n_; i++) {
                 if (steal_order[i] != id_in_pool) {
-                    if (q_[steal_order[i]].try_pop(&job)) {
+                    if (q_[steal_order[i]].try_pop(&job, nullptr)) {
                         stage = 0;
+                        break;
                     }
                 }
             }
@@ -112,18 +119,21 @@ void ThreadPool::run_thread(int id_in_pool) {
                 stage++;
             }
             break;
+        case 4:
+            job = q_[id_in_pool].pop();
+            stage = 0;
+            break;
         }
 
         if (stage == 0) {
+            if (job == nullptr) {
+                break;
+            }
             (*job)();
             delete job;
-            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec - 1000, 1000, 1000 * 1000);
+            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec - 1000, min_sleep_nsec, max_sleep_nsec);
         } else {
-            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec + 10 * 1000, 1000, 1000 * 1000);
-        }
-
-        if (stage >= 5) {
-            stage = 0;
+            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec + 10 * 1000, min_sleep_nsec, max_sleep_nsec);
         }
     }
     delete[] steal_order;

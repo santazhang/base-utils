@@ -146,6 +146,18 @@ public:
         return ret;
     }
 
+    bool try_pop(T* t, const T& ignore) {
+        bool ret = false;
+        Pthread_mutex_lock(&m_);
+        if (!q_->empty() && q_->front() != ignore) {
+            ret = true;
+            *t = q_->front();
+            q_->pop_front();
+        }
+        Pthread_mutex_unlock(&m_);
+        return ret;
+    }
+
     T pop() {
         Pthread_mutex_lock(&m_);
         while (q_->empty()) {
