@@ -146,7 +146,7 @@ public:
         return ret;
     }
 
-    bool try_pop(T* t, const T& ignore) {
+    bool try_pop_but_ignore(T* t, const T& ignore) {
         bool ret = false;
         Pthread_mutex_lock(&m_);
         if (!q_->empty() && q_->front() != ignore) {

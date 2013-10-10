@@ -1,6 +1,5 @@
 #include <functional>
 
-#include "logging.h"
 #include "misc.h"
 #include "threading.h"
 
@@ -36,12 +35,12 @@ ThreadPool::ThreadPool(int n /* =... */): n_(n), should_stop_(false) {
 ThreadPool::~ThreadPool() {
     should_stop_ = true;
     for (int i = 0; i < n_; i++) {
-        q_[i].push(nullptr);    // death pill
+        q_[i].push(nullptr);  // death pill
     }
     for (int i = 0; i < n_; i++) {
         Pthread_join(th_[i], nullptr);
     }
-    // need to check if there's jobs not executed yet in queues
+    // check if there's left over jobs
     for (int i = 0; i < n_; i++) {
         function<void()>* job;
         while (q_[i].try_pop(&job)) {
@@ -66,9 +65,9 @@ int ThreadPool::run_async(const std::function<void()>& f) {
 
 void ThreadPool::run_thread(int id_in_pool) {
     struct timespec sleep_req;
-    const int min_sleep_nsec = 1000; // 1us
-    const int max_sleep_nsec = 10 * 1000 * 1000; // 10ms
-    sleep_req.tv_nsec = 200 * 1000; // 200us
+    const int min_sleep_nsec = 1000;  // 1us
+    const int max_sleep_nsec = 10 * 1000 * 1000;  // 10ms
+    sleep_req.tv_nsec = 200 * 1000;  // 200us
     sleep_req.tv_sec = 0;
     int stage = 0;
 
@@ -109,7 +108,8 @@ void ThreadPool::run_thread(int id_in_pool) {
         case 3:
             for (int i = 0; i < n_; i++) {
                 if (steal_order[i] != id_in_pool) {
-                    if (q_[steal_order[i]].try_pop(&job, nullptr)) {
+                    // just don't steal other thread's death pill, otherwise they won't die
+                    if (q_[steal_order[i]].try_pop_but_ignore(&job, nullptr)) {
                         stage = 0;
                         break;
                     }

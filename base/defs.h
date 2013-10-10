@@ -12,3 +12,6 @@
 #else
 #define verify(expr) assert(expr)
 #endif
+
+// return v if v in [lower, upper], otherwise lower or upper, which is closest to v
+#define clamp(v, lower, upper) ((v) < (lower) ? (lower) : ((v) > (upper) ? (upper) : (v)))
