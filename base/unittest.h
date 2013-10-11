@@ -72,24 +72,22 @@ public:
         } \
     }
 
-#define EXPECT_EQ(a, b) \
+#define EXPECT_BINARY_OP_GENERATOR(op, a, b) \
     { \
         auto va = (a); \
         auto vb = (b); \
-        if (va != vb) { \
+        if (!(va op vb)) { \
             fail(); \
-            std::cout << "    *** expected equal: '" << #a << " == " << #b << "', got " << va << " != " << vb << " (" \
-                << __FILE__ << ':' << __LINE__  << ')' << std::endl; \
+            std::cout << "    *** expected: '" \
+                << #a << ' ' << #op << ' ' << #b \
+                << "', got " << va << " and " << vb \
+                << " (" << __FILE__ << ':' << __LINE__ << ')' << std::endl; \
         } \
     }
 
-#define EXPECT_NEQ(a, b) \
-    { \
-        auto va = (a); \
-        auto vb = (b); \
-        if (va == vb) { \
-            fail(); \
-            std::cout << "    *** expected not equal: '" << #a << " != " << #b << "', got " << va << " == " << vb << " (" \
-                << __FILE__ << ':' << __LINE__  << ')' << std::endl; \
-        } \
-    }
+#define EXPECT_LT(a, b) EXPECT_BINARY_OP_GENERATOR(<, a, b)
+#define EXPECT_LE(a, b) EXPECT_BINARY_OP_GENERATOR(<=, a, b)
+#define EXPECT_GT(a, b) EXPECT_BINARY_OP_GENERATOR(>, a, b)
+#define EXPECT_GE(a, b) EXPECT_BINARY_OP_GENERATOR(>=, a, b)
+#define EXPECT_EQ(a, b) EXPECT_BINARY_OP_GENERATOR(==, a, b)
+#define EXPECT_NEQ(a, b) EXPECT_BINARY_OP_GENERATOR(!=, a, b)
