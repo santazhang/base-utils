@@ -6,7 +6,7 @@ import sys
 from waflib import Logs
 
 # use clang++ as default compiler (for c++11 support on mac)
-if sys.platform == 'darwin' and not os.environ.has_key("CXX"):
+if sys.platform == 'darwin' and "CXX" not in os.environ:
     os.environ["CXX"] = "clang++"
 
 def options(opt):
@@ -34,7 +34,7 @@ def _enable_cxx11(conf):
     conf.env.append_value("CXXFLAGS", "-std=c++0x")
 
 def _enable_debug(conf):
-    if os.getenv("DEBUG") in ["true", "1"]:
+    if os.getenv("DEBUG") == "1":
         Logs.pprint("PINK", "Debug support enabled")
         conf.env.append_value("CXXFLAGS", "-Wall -pthread -ggdb".split())
     else:
