@@ -172,7 +172,7 @@ public:
 
 class ThreadPool: public RefCounted {
     int n_;
-    Rand rand_engine_;
+    Counter round_robin_;
     pthread_t* th_;
     Queue<std::function<void()>*>* q_;
     bool should_stop_;

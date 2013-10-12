@@ -57,8 +57,7 @@ int ThreadPool::run_async(const std::function<void()>& f) {
     if (should_stop_) {
         return EPERM;
     }
-    // Randomly select a thread for the job.
-    int queue_id = rand_engine_() % n_;
+    int queue_id = round_robin_.next() % n_;
     q_[queue_id].push(new function<void()>(f));
     return 0;
 }

@@ -20,7 +20,7 @@ TEST(threading, threadpool) {
 }
 
 TEST(threading, empty_threadpool) {
-    int n_thread = 500;
+    int n_thread = 32;
     int n_sec = 10;
     ThreadPool* tpool = new ThreadPool(n_thread);
     Log::info("starting ThreadPool(%d) with no jobs, wait for %d seconds. CPU usage should be low.", n_thread, n_sec);
