@@ -22,9 +22,11 @@ TEST(basetypes, rand_benchmark_multi_thread) {
     int n = 10 * 1000 * 1000;
     Timer t;
     t.start();
+    Mutex m;
     for (int j = 0; j < n_thread; j++) {
-        tpool->run_async([&r, n] {
+        tpool->run_async([&r, n, &m] {
             for (int i = 0; i < n; i++) {
+                ScopedLock sl(&m);
                 r.next();
             }
         });
