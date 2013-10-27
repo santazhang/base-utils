@@ -66,9 +66,16 @@ public:
         pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
         Pthread_mutex_init(&m_, &attr);
     }
-    ~Mutex() { Pthread_mutex_destroy(&m_); }
-    void lock() { Pthread_mutex_lock(&m_); }
-    void unlock() { Pthread_mutex_unlock(&m_); }
+    ~Mutex() {
+        Pthread_mutex_destroy(&m_);
+    }
+
+    void lock() {
+        Pthread_mutex_lock(&m_);
+    }
+    void unlock() {
+        Pthread_mutex_unlock(&m_);
+    }
 private:
     friend class CondVar;
     pthread_mutex_t m_;
@@ -90,18 +97,37 @@ private:
 
 class CondVar: public NoCopy {
 public:
-    CondVar() { Pthread_cond_init(&cv_, NULL); }
-    ~CondVar() { Pthread_cond_destroy(&cv_); }
+    CondVar() {
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
+        Pthread_mutex_init(&m_, &attr);
+        Pthread_cond_init(&cv_, NULL);
+    }
+    ~CondVar() {
+        Pthread_cond_destroy(&cv_);
+        Pthread_mutex_destroy(&m_);
+    }
 
-    void wait(Mutex* mutex) { Pthread_cond_wait(&cv_, &(mutex->m_)); }
-    void signal() { Pthread_cond_signal(&cv_); }
-    void bcast() { Pthread_cond_broadcast(&cv_); }
-
-    int timed_wait(Mutex* mutex, const struct timespec* timeout) {
-        return pthread_cond_timedwait(&cv_, &(mutex->m_), timeout);
+    void wait() {
+        Pthread_cond_wait(&cv_, &m_);
+    }
+    void signal() {
+        Pthread_mutex_lock(&m_);
+        Pthread_cond_signal(&cv_);
+        Pthread_mutex_unlock(&m_);
+    }
+    void bcast() {
+        Pthread_mutex_lock(&m_);
+        Pthread_cond_broadcast(&cv_);
+        Pthread_mutex_unlock(&m_);
+    }
+    int timed_wait(const struct timespec* timeout) {
+        return pthread_cond_timedwait(&cv_, &m_, timeout);
     }
 private:
     pthread_cond_t cv_;
+    pthread_mutex_t m_;
 };
 
 
