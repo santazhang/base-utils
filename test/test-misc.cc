@@ -29,3 +29,10 @@ TEST(misc, clamp) {
     EXPECT_EQ(clamp(1.0, 2.0, 8.0), 2.0);
     EXPECT_EQ(clamp(1.0, 0.4, 0.8), 0.8);
 }
+
+TEST(misc, arraysize) {
+    int a1[10];
+    EXPECT_EQ(arraysize(a1), 10);
+    char a2[20];
+    EXPECT_EQ(arraysize(a2), 20);
+}
