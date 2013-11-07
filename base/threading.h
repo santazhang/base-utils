@@ -98,36 +98,26 @@ private:
 class CondVar: public NoCopy {
 public:
     CondVar() {
-        pthread_mutexattr_t attr;
-        pthread_mutexattr_init(&attr);
-        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
-        Pthread_mutex_init(&m_, &attr);
         Pthread_cond_init(&cv_, NULL);
     }
     ~CondVar() {
         Pthread_cond_destroy(&cv_);
-        Pthread_mutex_destroy(&m_);
     }
 
-    void wait() {
-        Pthread_cond_wait(&cv_, &m_);
+    void wait(Mutex& m) {
+        Pthread_cond_wait(&cv_, &m.m_);
     }
     void signal() {
-        Pthread_mutex_lock(&m_);
         Pthread_cond_signal(&cv_);
-        Pthread_mutex_unlock(&m_);
     }
     void bcast() {
-        Pthread_mutex_lock(&m_);
         Pthread_cond_broadcast(&cv_);
-        Pthread_mutex_unlock(&m_);
     }
-    int timed_wait(const struct timespec* timeout) {
-        return pthread_cond_timedwait(&cv_, &m_, timeout);
+    int timed_wait(Mutex& m, const struct timespec* timeout) {
+        return pthread_cond_timedwait(&cv_, &m.m_, timeout);
     }
 private:
     pthread_cond_t cv_;
-    pthread_mutex_t m_;
 };
 
 
