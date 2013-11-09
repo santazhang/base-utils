@@ -32,7 +32,7 @@ TEST(misc, clamp) {
 
 TEST(misc, arraysize) {
     int a1[10];
-    EXPECT_EQ(arraysize(a1), 10);
+    EXPECT_EQ(arraysize(a1), 10u);
     char a2[20];
-    EXPECT_EQ(arraysize(a2), 20);
+    EXPECT_EQ(arraysize(a2), 20u);
 }
