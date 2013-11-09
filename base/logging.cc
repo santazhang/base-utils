@@ -10,17 +10,19 @@ namespace base {
 
 int Log::level_s = Log::DEBUG;
 FILE* Log::fp_s = stdout;
-Mutex Log::m_s;
+pthread_mutex_t Log::m_s = PTHREAD_MUTEX_INITIALIZER;
 
 void Log::set_level(int level) {
-    ScopedLock sl(&m_s);
+    Pthread_mutex_lock(&m_s);
     level_s = level;
+    Pthread_mutex_unlock(&m_s);
 }
 
 void Log::set_file(FILE* fp) {
     verify(fp != NULL);
-    ScopedLock sl(&m_s);
+    Pthread_mutex_lock(&m_s);
     fp_s = fp;
+    Pthread_mutex_unlock(&m_s);
 }
 
 static const char* basename(const char* fpath) {
@@ -46,7 +48,7 @@ void Log::log_v(int level, int line, const char* file, const char* fmt, va_list 
     if (level <= level_s) {
         const char* filebase = basename(file);
         char now_str[TIME_NOW_STR_SIZE];
-        m_s.lock();
+        Pthread_mutex_lock(&m_s);
         time_now_str(now_str);
         fprintf(fp_s, "%c ", indicator[level]);
         if (filebase != nullptr) {
@@ -55,7 +57,7 @@ void Log::log_v(int level, int line, const char* file, const char* fmt, va_list 
         fprintf(fp_s, "%s | ", now_str);
         vfprintf(fp_s, fmt, args);
         fprintf(fp_s, "\n");
-        m_s.unlock();
+        Pthread_mutex_unlock(&m_s);
         fflush(fp_s);
     }
 }

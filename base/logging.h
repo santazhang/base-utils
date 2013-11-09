@@ -13,7 +13,9 @@ namespace base {
 class Log {
     static int level_s;
     static FILE* fp_s;
-    static Mutex m_s;
+
+    // have to use pthread mutex because Mutex class cannot be init'ed correctly as static var
+    static pthread_mutex_t m_s;
 
     static void log_v(int level, int line, const char* file, const char* fmt, va_list args);
 public:

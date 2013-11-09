@@ -113,9 +113,9 @@ public:
     void bcast() {
         Pthread_cond_broadcast(&cv_);
     }
-    int timed_wait(Mutex& m, const struct timespec* timeout) {
-        return pthread_cond_timedwait(&cv_, &m.m_, timeout);
-    }
+
+    // timeout here is not abs time, it's the seconds to be waited
+    int timed_wait(Mutex& m, const struct timespec& timeout);
 private:
     pthread_cond_t cv_;
 };
