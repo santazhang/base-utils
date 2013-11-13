@@ -19,7 +19,7 @@ void Log::set_level(int level) {
 }
 
 void Log::set_file(FILE* fp) {
-    verify(fp != NULL);
+    verify(fp != nullptr);
     Pthread_mutex_lock(&m_s);
     fp_s = fp;
     Pthread_mutex_unlock(&m_s);

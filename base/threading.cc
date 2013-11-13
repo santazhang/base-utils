@@ -30,8 +30,8 @@ void* ThreadPool::start_thread_pool(void* args) {
     start_thread_pool_args* t_args = (start_thread_pool_args *) args;
     t_args->thrpool->run_thread(t_args->id_in_pool);
     delete t_args;
-    pthread_exit(NULL);
-    return NULL;
+    pthread_exit(nullptr);
+    return nullptr;
 }
 
 ThreadPool::ThreadPool(int n /* =... */): n_(n), should_stop_(false) {
@@ -42,7 +42,7 @@ ThreadPool::ThreadPool(int n /* =... */): n_(n), should_stop_(false) {
         start_thread_pool_args* args = new start_thread_pool_args();
         args->thrpool = this;
         args->id_in_pool = i;
-        Pthread_create(&th_[i], NULL, ThreadPool::start_thread_pool, args);
+        Pthread_create(&th_[i], nullptr, ThreadPool::start_thread_pool, args);
     }
 }
 
@@ -115,7 +115,7 @@ void ThreadPool::run_thread(int id_in_pool) {
             }
             break;
         case 1:
-            nanosleep(&sleep_req, NULL);
+            nanosleep(&sleep_req, nullptr);
             stage++;
             break;
         case 3:

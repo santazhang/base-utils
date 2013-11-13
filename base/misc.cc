@@ -21,7 +21,7 @@ static void make_int(char* str, int val, int digits) {
 // strftime is slow because it ends up consulting timezone info
 // also, snprintf is slow
 void time_now_str(char* now) {
-    time_t seconds_since_epoch = time(NULL);
+    time_t seconds_since_epoch = time(nullptr);
     struct tm local_calendar;
     localtime_r(&seconds_since_epoch, &local_calendar);
     make_int(now, local_calendar.tm_year + 1900, 4);
@@ -37,7 +37,7 @@ void time_now_str(char* now) {
     make_int(now + 17, local_calendar.tm_sec, 2);
     now[19] = '.';
     timeval tv;
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, nullptr);
     make_int(now + 20, tv.tv_usec / 1000, 3);
     now[23] = '\0';
 }

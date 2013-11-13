@@ -25,7 +25,7 @@ double Timer::elapsed() const {
 
 Rand::Rand() {
     struct timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     rand_.seed(now.tv_sec + now.tv_usec + (long long) pthread_self() + (long long) this);
 }
 

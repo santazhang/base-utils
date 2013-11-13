@@ -45,7 +45,7 @@ public:
         t.tv_sec = 0;
         t.tv_nsec = 50000;
         while (__sync_lock_test_and_set(&locked_, 1)) {
-            nanosleep(&t, NULL);
+            nanosleep(&t, nullptr);
         }
     }
     void unlock() {
@@ -98,7 +98,7 @@ private:
 class CondVar: public NoCopy {
 public:
     CondVar() {
-        Pthread_cond_init(&cv_, NULL);
+        Pthread_cond_init(&cv_, nullptr);
     }
     ~CondVar() {
         Pthread_cond_destroy(&cv_);
@@ -133,8 +133,8 @@ class Queue: public NoCopy {
 public:
 
     Queue(): q_(new std::list<T>) {
-        Pthread_mutex_init(&m_, NULL);
-        Pthread_cond_init(&not_empty_, NULL);
+        Pthread_mutex_init(&m_, nullptr);
+        Pthread_cond_init(&not_empty_, nullptr);
     }
 
     ~Queue() {
