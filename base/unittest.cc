@@ -27,7 +27,7 @@ TestCase* TestMgr::reg(TestCase* t) {
 void TestMgr::matched_tests(const char* match, std::vector<TestCase*>* matched) {
     std::vector<std::string>&& split = strsplit(match, ',');
     matched->clear();
-    for (auto t: tests_) {
+    for (auto& t: tests_) {
         for (auto& s: split) {
             if (s.find('/') != std::string::npos) {
                 if (t->group() + std::string("/") + t->name() == s) {
@@ -69,9 +69,9 @@ int TestMgr::parse_args(int argc, char* argv[], bool* show_help, bool* list_test
         *selected = match;
     } else if (select == nullptr && skip != nullptr) {
         selected->clear();
-        for (auto t: tests_) {
+        for (auto& t: tests_) {
             bool select = true;
-            for (auto m: match) {
+            for (auto& m: match) {
                 if (t == m) {
                     select = false;
                 }
@@ -97,7 +97,7 @@ int TestMgr::run(int argc, char* argv[]) {
         return r;
     }
     if (list_tests) {
-        for (auto t : selected) {
+        for (auto& t : selected) {
             printf("%s/%s\n", t->group(), t->name());
         }
         return r;
@@ -107,11 +107,11 @@ int TestMgr::run(int argc, char* argv[]) {
     int passed = 0;
     if (selected.size() > 0) {
         Log::info("The following %d test cases will be checked:", selected.size());
-        for (auto t : selected) {
+        for (auto& t : selected) {
             Log::info("    %s/%s", t->group(), t->name());
         }
     }
-    for (auto t : selected) {
+    for (auto& t : selected) {
         Log::info("--> starting test: %s/%s", t->group(), t->name());
         t->run();
         failures += t->failures();
