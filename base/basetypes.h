@@ -14,12 +14,10 @@ class NoCopy {
     NoCopy(const NoCopy&);
     const NoCopy& operator =(const NoCopy&);
 protected:
-    NoCopy() {
-    }
+    NoCopy() {}
     virtual ~NoCopy() = 0;
 };
-inline NoCopy::~NoCopy() {
-}
+inline NoCopy::~NoCopy() {}
 
 /**
  * Note: All sub class of RefCounted *MUST* have protected destructor!
@@ -32,8 +30,7 @@ class RefCounted: public NoCopy {
 protected:
     virtual ~RefCounted() {}
 public:
-    RefCounted(): refcnt_(1) {
-    }
+    RefCounted(): refcnt_(1) {}
     int ref_count() {
         return refcnt_;
     }
