@@ -19,7 +19,8 @@ TEST(threading, condvar) {
 
     Log::info("will wait mutex for 2 seconds (not holding locks, incorrect!)");
     ret = cv.timed_wait(m, tm);
-    EXPECT_EQ(ret, EPERM);
+    // on mac, timed_wait return EINVAL
+    EXPECT_TRUE(ret == EPERM || ret == EINVAL);
     Log::info("done waiting, return = %d, err = %s", ret, strerror(ret));
 }
 
