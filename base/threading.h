@@ -32,30 +32,13 @@ public:
 
 class SpinLock: public Lockable {
 public:
-    SpinLock(): locked_(0) { }
-    void lock() {
-        if (!lock_state() && !__sync_lock_test_and_set(&locked_, 1)) {
-            return;
-        }
-        int wait = 1000;
-        while ((wait-- > 0) && lock_state()) {
-            // spin for a short while
-        }
-        struct timespec t;
-        t.tv_sec = 0;
-        t.tv_nsec = 50000;
-        while (__sync_lock_test_and_set(&locked_, 1)) {
-            nanosleep(&t, nullptr);
-        }
-    }
+    SpinLock(): locked_(false) { }
+    void lock();
     void unlock() {
         __sync_lock_release(&locked_);
     }
 private:
-    int locked_ __attribute__((aligned (64)));
-    int lock_state() const volatile {
-        return locked_;
-    }
+    volatile bool locked_ __attribute__((aligned (64)));
 };
 
 class Mutex: public Lockable {

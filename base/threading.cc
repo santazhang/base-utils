@@ -8,6 +8,25 @@ using namespace std;
 
 namespace base {
 
+void SpinLock::lock() {
+    if (!locked_ && !__sync_lock_test_and_set(&locked_, true)) {
+        return;
+    }
+    int wait = 1000;
+    while ((wait-- > 0) && locked_) {
+        // spin for a short while
+#if defined(__i386__) || defined(__x86_64__)
+        asm volatile("pause");
+#endif
+    }
+    struct timespec t;
+    t.tv_sec = 0;
+    t.tv_nsec = 50000;
+    while (__sync_lock_test_and_set(&locked_, true)) {
+        nanosleep(&t, nullptr);
+    }
+}
+
 int CondVar::timed_wait(Mutex& m, const struct timespec& timeout) {
     struct timeval tv;
     gettimeofday(&tv, nullptr);
