@@ -1,14 +1,6 @@
 APPNAME="base-utils"
 VERSION="0.1"
 
-import os
-import sys
-from waflib import Logs
-
-# use clang++ as default compiler (for c++11 support on mac)
-if sys.platform == 'darwin' and "CXX" not in os.environ:
-    os.environ["CXX"] = "clang++"
-
 def options(opt):
     opt.load("compiler_cxx")
 
@@ -23,8 +15,16 @@ def build(bld):
     bld.program(source=bld.path.ant_glob("test/test*.cc"), target="testharness", includes=".", use="base PTHREAD")
 
 #
-# waf helper functions
+# waf helper code
 #
+
+import os
+import sys
+from waflib import Logs
+
+# use clang++ as default compiler (for c++11 support on mac)
+if sys.platform == 'darwin' and "CXX" not in os.environ:
+    os.environ["CXX"] = "clang++"
 
 def _enable_cxx11(conf):
     Logs.pprint("PINK", "C++11 features enabled")
