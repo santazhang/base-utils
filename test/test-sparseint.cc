@@ -31,11 +31,11 @@ TEST(sparseint, dump_load_i32) {
         const i32 v = values[i];
         memset(buf, 0, 9);
         int bsize = SparseInt::dump(v, buf);
-        //print_binary(buf, bsize);
-        //print_binary(&v, 4);
+        print_binary(buf, bsize);
+        print_binary(&v, 4);
         const i32 u = SparseInt::load_i32(buf);
         Log::debug("%ld -> bsize=%ld -> %ld", (long) v, bsize, (long) u);
-        //EXPECT_EQ(v, u);
+        EXPECT_EQ(v, u);
         EXPECT_EQ(bsize, bs[i]);
     }
 }
