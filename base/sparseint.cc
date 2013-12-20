@@ -2,29 +2,29 @@
 
 namespace base {
 
-int SparseInt::buf_size(char byte1) {
-    if ((byte1 & 0x80) == 0) {
+int SparseInt::buf_size(char byte0) {
+    if ((byte0 & 0x80) == 0) {
         // binary: 0...
         return 1;
-    } else if ((byte1 & 0xC0) == 0x80) {
+    } else if ((byte0 & 0xC0) == 0x80) {
         // binary: 10...
         return 2;
-    } else if ((byte1 & 0xE0) == 0xC0) {
+    } else if ((byte0 & 0xE0) == 0xC0) {
         // binary: 110...
         return 3;
-    } else if ((byte1 & 0xF0) == 0xE0) {
+    } else if ((byte0 & 0xF0) == 0xE0) {
         // binary: 1110...
         return 4;
-    } else if ((byte1 & 0xF8) == 0xF0) {
+    } else if ((byte0 & 0xF8) == 0xF0) {
         // binary: 11110...
         return 5;
-    } else if ((byte1 & 0xFC) == 0xF8) {
+    } else if ((byte0 & 0xFC) == 0xF8) {
         // binary: 111110...
         return 6;
-    } else if ((byte1 & 0xFE) == 0xFC) {
+    } else if ((byte0 & 0xFE) == 0xFC) {
         // binary: 1111110...
         return 7;
-    } else if ((byte1 & 0xFF) == 0xFE) {
+    } else if ((byte0 & 0xFF) == 0xFE) {
         // binary: 11111110...
         return 8;
     } else {
