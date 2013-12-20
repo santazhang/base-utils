@@ -150,7 +150,6 @@ int SparseInt::dump(i64 val, char* buf) {
         buf[6] = pv[2];
         buf[7] = pv[1];
         buf[8] = pv[0];
-        buf[0] = 0xFE;
         buf[0] = 0xFF;
         return 9;
     }
