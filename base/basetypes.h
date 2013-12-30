@@ -7,8 +7,56 @@
 
 namespace base {
 
+typedef int32_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
+
+class SparseInt {
+public:
+    static int buf_size(char byte0);
+    static int dump(i32 val, char* buf);
+    static int dump(i64 val, char* buf);
+    static i32 load_i32(const char* buf);
+    static i64 load_i64(const char* buf);
+};
+
+class vi32 {
+    i32 val_;
+    char buf_[5];
+public:
+    vi32(i32 v = 0) {
+        set(v);
+    }
+    void set(i32 v) {
+        val_ = v;
+        SparseInt::dump(val_, buf_);
+    }
+    i32 get() const {
+        return val_;
+    }
+    operator i32() const {
+        return get();
+    }
+};
+
+class vi64 {
+    i64 val_;
+    char buf_[5];
+public:
+    vi64(i64 v = 0) {
+        set(v);
+    }
+    void set(i64 v) {
+        val_ = v;
+        SparseInt::dump(val_, buf_);
+    }
+    i64 get() const {
+        return val_;
+    }
+    operator i64() const {
+        return get();
+    }
+};
 
 class NoCopy {
     NoCopy(const NoCopy&);
