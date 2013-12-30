@@ -7,7 +7,7 @@
 
 namespace base {
 
-typedef char byte;
+typedef int8_t i8;
 typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
@@ -21,11 +21,11 @@ public:
     static i64 load_i64(const char* buf);
 };
 
-class vi32 {
+class v32 {
     i32 val_;
     char buf_[5];
 public:
-    vi32(i32 v = 0) {
+    v32(i32 v = 0) {
         set(v);
     }
     void set(i32 v) {
@@ -35,16 +35,13 @@ public:
     i32 get() const {
         return val_;
     }
-    operator i32() const {
-        return get();
-    }
 };
 
-class vi64 {
+class v64 {
     i64 val_;
     char buf_[5];
 public:
-    vi64(i64 v = 0) {
+    v64(i64 v = 0) {
         set(v);
     }
     void set(i64 v) {
@@ -53,9 +50,6 @@ public:
     }
     i64 get() const {
         return val_;
-    }
-    operator i64() const {
-        return get();
     }
 };
 
