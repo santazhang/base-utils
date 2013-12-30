@@ -23,14 +23,10 @@ public:
 
 class v32 {
     i32 val_;
-    char buf_[5];
 public:
-    v32(i32 v = 0) {
-        set(v);
-    }
+    v32(i32 v = 0): val_(v) { }
     void set(i32 v) {
         val_ = v;
-        SparseInt::dump(val_, buf_);
     }
     i32 get() const {
         return val_;
@@ -39,14 +35,10 @@ public:
 
 class v64 {
     i64 val_;
-    char buf_[5];
 public:
-    v64(i64 v = 0) {
-        set(v);
-    }
+    v64(i64 v = 0): val_(v) { }
     void set(i64 v) {
         val_ = v;
-        SparseInt::dump(val_, buf_);
     }
     i64 get() const {
         return val_;
