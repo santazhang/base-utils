@@ -5,7 +5,7 @@
 namespace base {
 
 
-int SparseInt::buf_size(char byte0) {
+size_t SparseInt::buf_size(char byte0) {
     if ((byte0 & 0x80) == 0) {
         // binary: 0...
         return 1;
@@ -35,7 +35,7 @@ int SparseInt::buf_size(char byte0) {
     }
 }
 
-int SparseInt::val_size(i64 val) {
+size_t SparseInt::val_size(i64 val) {
     if (-64 <= val && val <= 63) {
         return 1;
     } else if (-8192 <= val && val <= 8191) {
@@ -57,7 +57,7 @@ int SparseInt::val_size(i64 val) {
     }
 }
 
-int SparseInt::dump(i32 val, char* buf) {
+size_t SparseInt::dump(i32 val, char* buf) {
     char* pv = (char *) &val;
     if (-64 <= val && val <= 63) {
         buf[0] = pv[0];
@@ -98,7 +98,7 @@ int SparseInt::dump(i32 val, char* buf) {
     }
 }
 
-int SparseInt::dump(i64 val, char* buf) {
+size_t SparseInt::dump(i64 val, char* buf) {
     char* pv = (char *) &val;
     if (-64 <= val && val <= 63) {
         buf[0] = pv[0];

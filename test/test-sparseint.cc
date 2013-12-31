@@ -27,7 +27,7 @@ TEST(sparseint, dump_load_i32) {
     const int bs[] = {1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3,
                     4, 4, 4, 4,
                     5, 5, 5, 5};
-    for (int i = 0; i < arraysize(values); i++) {
+    for (size_t i = 0; i < arraysize(values); i++) {
         const i32 v = values[i];
         memset(buf, 0, 9);
         int bsize = SparseInt::dump(v, buf);
@@ -64,7 +64,7 @@ TEST(sparseint, dump_load_i64) {
                     7, 7, 8, 8,
                     8, 8, 9, 9,
                     9, 9};
-    for (int i = 0; i < arraysize(values); i++) {
+    for (size_t i = 0; i < arraysize(values); i++) {
         const i64 v = values[i];
         memset(buf, 0, 9);
         int bsize = SparseInt::dump(v, buf);
