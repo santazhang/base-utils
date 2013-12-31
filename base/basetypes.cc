@@ -35,6 +35,28 @@ int SparseInt::buf_size(char byte0) {
     }
 }
 
+int SparseInt::val_size(i64 val) {
+    if (-64 <= val && val <= 63) {
+        return 1;
+    } else if (-8192 <= val && val <= 8191) {
+        return 2;
+    } else if (-1048576 <= val && val <= 1048575) {
+        return 3;
+    } else if (-134217728 <= val && val <= 134217727) {
+        return 4;
+    } else if (-17179869184LL <= val && val <= 17179869183LL) {
+        return 5;
+    } else if (-2199023255552LL <= val && val <= 2199023255551LL) {
+        return 6;
+    } else if (-281474976710656LL <= val && val <= 281474976710655LL) {
+        return 7;
+    } else if (-36028797018963968LL <= val && val <= 36028797018963967LL) {
+        return 8;
+    } else {
+        return 9;
+    }
+}
+
 int SparseInt::dump(i32 val, char* buf) {
     char* pv = (char *) &val;
     if (-64 <= val && val <= 63) {

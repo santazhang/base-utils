@@ -15,6 +15,7 @@ typedef int64_t i64;
 class SparseInt {
 public:
     static int buf_size(char byte0);
+    static int val_size(i64 val);
     static int dump(i32 val, char* buf);
     static int dump(i64 val, char* buf);
     static i32 load_i32(const char* buf);
@@ -31,6 +32,9 @@ public:
     i32 get() const {
         return val_;
     }
+    int val_size() const {
+        return SparseInt::val_size(val_);
+    }
 };
 
 class v64 {
@@ -42,6 +46,9 @@ public:
     }
     i64 get() const {
         return val_;
+    }
+    int val_size() const {
+        return SparseInt::val_size(val_);
     }
 };
 
