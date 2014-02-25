@@ -179,6 +179,7 @@ void* RunLater::start_run_later(void* thiz) {
 }
 
 RunLater::RunLater() {
+    should_stop_ = false;
     latest_ = 0.0;
     Pthread_mutex_init(&m_, nullptr);
     Pthread_cond_init(&cv_, nullptr);
