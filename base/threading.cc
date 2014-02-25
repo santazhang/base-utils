@@ -171,4 +171,122 @@ void ThreadPool::run_thread(int id_in_pool) {
     delete[] steal_order;
 }
 
+void* RunLater::start_run_later(void* thiz) {
+    RunLater* rl = (RunLater *) thiz;
+    rl->run_later_loop();
+    pthread_exit(nullptr);
+    return nullptr;
+}
+
+RunLater::RunLater() {
+    latest_ = 0.0;
+    Pthread_mutex_init(&m_, nullptr);
+    Pthread_cond_init(&cv_, nullptr);
+    Pthread_create(&th_, nullptr, RunLater::start_run_later, this);
+}
+
+RunLater::~RunLater() {
+    should_stop_ = true;
+
+    Pthread_mutex_lock(&m_);
+    jobs_.push(make_pair(0.0, nullptr)); // death pill
+    Pthread_cond_signal(&cv_);
+    Pthread_mutex_unlock(&m_);
+
+    Pthread_join(th_, nullptr);
+    Pthread_mutex_destroy(&m_);
+    Pthread_cond_destroy(&cv_);
+}
+
+void RunLater::try_one_job() {
+    Pthread_mutex_lock(&m_);
+    if (!jobs_.empty()) {
+        auto& j = jobs_.top();
+        struct timeval now;
+        gettimeofday(&now, nullptr);
+        double now_f = now.tv_sec + now.tv_usec / 1000.0 / 1000.0;
+        double wait = j.first - now_f;
+        if (wait < 0.0) {
+            if (j.second == nullptr) {
+                // death pill
+                jobs_.pop();
+                Pthread_mutex_unlock(&m_);
+                return;
+            } else {
+                (*j.second)();
+                delete j.second;
+                jobs_.pop();
+            }
+        } else {
+            // wait for the time to execute a job
+            struct timespec abstime;
+            int wait_sec = (int) wait;
+            int wait_nsec = (int) ((wait - wait_sec) * 1000.0 * 1000.0 * 1000.0);
+            abstime.tv_sec = now.tv_sec;
+            abstime.tv_nsec = now.tv_usec * 1000 + wait_nsec;
+            if (abstime.tv_nsec > 1000 * 1000 * 1000) {
+                abstime.tv_sec += 1;
+                abstime.tv_nsec -= 1000 * 1000 * 1000;
+            }
+            int ret = pthread_cond_timedwait(&cv_, &m_, &abstime);
+            verify(ret == ETIMEDOUT || ret == 0);
+        }
+    } else {
+        // wait for inserting a new job
+        Pthread_cond_wait(&cv_, &m_);
+    }
+    Pthread_mutex_unlock(&m_);
+}
+
+void RunLater::run_later_loop() {
+    while (!should_stop_) {
+        try_one_job();
+    }
+
+    bool done = false;
+    while (!done) {
+        Pthread_mutex_lock(&m_);
+        if (jobs_.empty()) {
+            done = true;
+        }
+        Pthread_mutex_unlock(&m_);
+        if (!done) {
+            try_one_job();
+        }
+    }
+}
+
+int RunLater::run_later(double sec, const std::function<void()>& f) {
+    if (should_stop_) {
+        return EPERM;
+    }
+
+    struct timeval now;
+    gettimeofday(&now, nullptr);
+    double later = now.tv_sec + now.tv_usec / 1000.0 / 1000.0;
+    if (sec > 0.0) {
+        later += sec;
+    }
+
+    latest_l_.lock();
+    if (later > latest_) {
+        latest_ = later;
+    }
+    latest_l_.unlock();
+
+    Pthread_mutex_lock(&m_);
+    jobs_.push(make_pair(later, new std::function<void()>(f)));
+    Pthread_cond_signal(&cv_);
+    Pthread_mutex_unlock(&m_);
+
+    return 0;
+}
+
+double RunLater::max_wait() const {
+    struct timeval now;
+    gettimeofday(&now, nullptr);
+    double now_f = now.tv_sec + now.tv_usec / 1000.0 / 1000.0;
+    return max(0.0, latest_ - now_f);
+}
+
 } // namespace base

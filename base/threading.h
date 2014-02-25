@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <queue>
 #include <functional>
 #include <pthread.h>
 
@@ -187,6 +188,33 @@ public:
 
     // return 0 when queuing ok, otherwise EPERM
     int run_async(const std::function<void()>&);
+};
+
+class RunLater: public RefCounted {
+    typedef std::pair<double, std::function<void()>*> job_t;
+
+    pthread_t th_;
+    pthread_mutex_t m_;
+    pthread_cond_t cv_;
+    bool should_stop_;
+
+    SpinLock latest_l_;
+    double latest_;
+
+    std::priority_queue<job_t, std::vector<job_t>, std::greater<job_t>> jobs_;
+
+    static void* start_run_later(void*);
+    void run_later_loop();
+    void try_one_job();
+public:
+    RunLater();
+
+    // return 0 when queuing ok, otherwise EPERM
+    int run_later(double sec, const std::function<void()>&);
+
+    double max_wait() const;
+protected:
+    ~RunLater();
 };
 
 } // namespace base
