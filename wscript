@@ -1,5 +1,5 @@
 APPNAME="base-utils"
-VERSION="0.1"
+VERSION="0.1.1"
 
 def options(opt):
     opt.load("compiler_cxx")
@@ -13,7 +13,7 @@ def configure(conf):
 
 def build(bld):
     bld.stlib(source=bld.path.ant_glob("base/*.cc"), target="base", includes="base", use="PTHREAD")
-    bld.program(source=bld.path.ant_glob("test/test*.cc"), target="testharness", includes=".", use="base PTHREAD")
+    bld.program(source=bld.path.ant_glob("test/test*.cc"), target="unittest", includes=".", use="base PTHREAD")
 
 #
 # waf helper code
