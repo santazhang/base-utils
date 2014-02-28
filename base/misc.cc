@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include <sys/time.h>
 
 #include "misc.h"
@@ -40,6 +41,10 @@ void time_now_str(char* now) {
     gettimeofday(&tv, nullptr);
     make_int(now + 20, tv.tv_usec / 1000, 3);
     now[23] = '\0';
+}
+
+int get_ncpu() {
+    return sysconf(_SC_NPROCESSORS_ONLN);
 }
 
 } // namespace base

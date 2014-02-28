@@ -54,6 +54,7 @@ void* ThreadPool::start_thread_pool(void* args) {
 }
 
 ThreadPool::ThreadPool(int n /* =... */): n_(n), should_stop_(false) {
+    verify(n_ >= 0);
     th_ = new pthread_t[n_];
     q_ = new Queue<function<void()>*> [n_];
 

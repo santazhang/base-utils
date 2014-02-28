@@ -26,6 +26,7 @@ inline T clamp(const T& v, const T1& lower, const T2& upper) {
 #define TIME_NOW_STR_SIZE 24
 void time_now_str(char* now);
 
+int get_ncpu();
 
 // This template function declaration is used in defining arraysize.
 // Note that the function doesn't need an implementation, as we only

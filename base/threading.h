@@ -6,6 +6,7 @@
 #include <pthread.h>
 
 #include "basetypes.h"
+#include "misc.h"
 
 #define Pthread_spin_init(l, pshared) verify(pthread_spin_init(l, pshared) == 0)
 #define Pthread_spin_lock(l) verify(pthread_spin_lock(l) == 0)
@@ -184,7 +185,7 @@ protected:
     ~ThreadPool();
 
 public:
-    ThreadPool(int n = 64);
+    ThreadPool(int n = get_ncpu() * 2);
 
     // return 0 when queuing ok, otherwise EPERM
     int run_async(const std::function<void()>&);

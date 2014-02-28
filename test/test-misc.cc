@@ -36,3 +36,7 @@ TEST(misc, arraysize) {
     char a2[20];
     EXPECT_EQ(arraysize(a2), 20u);
 }
+
+TEST(misc, get_ncpu) {
+    Log::debug("ncpu = %d", get_ncpu());
+}
