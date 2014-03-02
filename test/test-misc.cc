@@ -1,4 +1,5 @@
 #include <string.h>
+#include <unistd.h>
 
 #include "base/all.h"
 
@@ -16,6 +17,24 @@ TEST(misc, time_now_str) {
     EXPECT_EQ((int) strlen(now), TIME_NOW_STR_SIZE - 1);
     Log::info("time_now_str() %d times takes %lf sec, that's %.2lf usec per op",
         n, t.elapsed(), t.elapsed() * 1e6 / n);
+}
+
+TEST(misc, timer_elapsed) {
+    Timer t;
+    t.start();
+    Log::info("timer start!");
+    Log::info("timer elapsed: %lf", t.elapsed());
+    usleep(300 * 1000); // 300ms
+    Log::info("timer elapsed: %lf", t.elapsed());
+    usleep(240 * 1000); // 240ms
+    Log::info("timer stop!");
+    t.stop();
+    double t1 = t.elapsed();
+    Log::info("timer elapsed: %lf", t1);
+    usleep(500 * 1000); // 500ms
+    double t2 = t.elapsed();
+    Log::info("timer elapsed: %lf", t2);
+    EXPECT_EQ(t1, t2);
 }
 
 TEST(misc, clamp) {
