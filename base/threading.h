@@ -99,8 +99,7 @@ public:
         Pthread_cond_broadcast(&cv_);
     }
 
-    // timeout here is not abs time, it's the seconds to be waited
-    int timed_wait(Mutex& m, const struct timespec& timeout);
+    int timed_wait(Mutex& m, double sec);
 private:
     pthread_cond_t cv_;
 };

@@ -27,12 +27,14 @@ void SpinLock::lock() {
     }
 }
 
-int CondVar::timed_wait(Mutex& m, const struct timespec& timeout) {
+int CondVar::timed_wait(Mutex& m, double sec) {
+    int full_sec = (int) sec;
+    int nsec = int((sec - full_sec) * 1000 * 1000 * 1000);
     struct timeval tv;
     gettimeofday(&tv, nullptr);
     timespec abstime;
-    abstime.tv_sec = tv.tv_sec + timeout.tv_sec;
-    abstime.tv_nsec = tv.tv_usec * 1000 + timeout.tv_nsec;
+    abstime.tv_sec = tv.tv_sec + full_sec;
+    abstime.tv_nsec = tv.tv_usec * 1000 + nsec;
     if (abstime.tv_nsec > 1000 * 1000 * 1000) {
         abstime.tv_nsec -= 1000 * 1000 * 1000;
         abstime.tv_sec += 1;
