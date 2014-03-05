@@ -70,13 +70,13 @@ int TestMgr::parse_args(int argc, char* argv[], bool* show_help, bool* list_test
     } else if (select == nullptr && skip != nullptr) {
         selected->clear();
         for (auto& t: tests_) {
-            bool select = true;
+            bool select_me = true;
             for (auto& m: match) {
                 if (t == m) {
-                    select = false;
+                    select_me = false;
                 }
             }
-            if (select) {
+            if (select_me) {
                 selected->push_back(t);
             }
         }
