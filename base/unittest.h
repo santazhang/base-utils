@@ -50,7 +50,7 @@ public:
         ::base::TestMgr::instance()->reg(new TEST_CLASS_NAME(group, name)); \
     void TEST_CLASS_NAME(group, name)::run()
 
-#define RUN_TESTS(argc, argv) ::base::TestMgr::instance()->run(argc, argv);
+#define RUN_TESTS(argc, argv) ::base::TestMgr::instance()->run((argc), (argv));
 
 #define EXPECT_TRUE(a) \
     { \
@@ -85,9 +85,9 @@ public:
         } \
     }
 
-#define EXPECT_LT(a, b) EXPECT_BINARY_OP_GENERATOR(<, a, b)
-#define EXPECT_LE(a, b) EXPECT_BINARY_OP_GENERATOR(<=, a, b)
-#define EXPECT_GT(a, b) EXPECT_BINARY_OP_GENERATOR(>, a, b)
-#define EXPECT_GE(a, b) EXPECT_BINARY_OP_GENERATOR(>=, a, b)
-#define EXPECT_EQ(a, b) EXPECT_BINARY_OP_GENERATOR(==, a, b)
-#define EXPECT_NEQ(a, b) EXPECT_BINARY_OP_GENERATOR(!=, a, b)
+#define EXPECT_LT(a, b) EXPECT_BINARY_OP_GENERATOR(<, (a), (b))
+#define EXPECT_LE(a, b) EXPECT_BINARY_OP_GENERATOR(<=, (a), (b))
+#define EXPECT_GT(a, b) EXPECT_BINARY_OP_GENERATOR(>, (a), (b))
+#define EXPECT_GE(a, b) EXPECT_BINARY_OP_GENERATOR(>=, (a), (b))
+#define EXPECT_EQ(a, b) EXPECT_BINARY_OP_GENERATOR(==, (a), (b))
+#define EXPECT_NEQ(a, b) EXPECT_BINARY_OP_GENERATOR(!=, (a), (b))

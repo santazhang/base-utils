@@ -8,7 +8,7 @@
 #include "basetypes.h"
 #include "misc.h"
 
-#define Pthread_spin_init(l, pshared) verify(pthread_spin_init(l, pshared) == 0)
+#define Pthread_spin_init(l, pshared) verify(pthread_spin_init(l, (pshared)) == 0)
 #define Pthread_spin_lock(l) verify(pthread_spin_lock(l) == 0)
 #define Pthread_spin_unlock(l) verify(pthread_spin_unlock(l) == 0)
 #define Pthread_spin_destroy(l) verify(pthread_spin_destroy(l) == 0)
