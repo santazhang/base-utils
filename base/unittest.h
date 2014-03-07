@@ -10,7 +10,7 @@ class TestCase {
     const char* name_;
     int failures_;
 public:
-    TestCase(const char* group, const char* name): group_(group), name_(name), failures_(0) { }
+    TestCase(const char* _group, const char* _name): group_(_group), name_(_name), failures_(0) { }
     virtual void run() = 0;
     const char* group() { return group_; }
     const char* name() { return name_; }
