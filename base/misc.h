@@ -44,4 +44,9 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 
 #define arraysize(array) (sizeof(base::ArraySizeHelper(array)))
 
+template <class K, class V, class Map>
+inline void insert_into_map(Map& map, const K& key, const V& value) {
+    map.insert(typename Map::value_type(key, value));
+}
+
 } // namespace base
