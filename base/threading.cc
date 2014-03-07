@@ -101,7 +101,7 @@ int ThreadPool::run_async(const std::function<void()>& f) {
 void ThreadPool::run_thread(int id_in_pool) {
     struct timespec sleep_req;
     const int min_sleep_nsec = 1000;  // 1us
-    const int max_sleep_nsec = 1000 * 1000;  // 1ms
+    const int max_sleep_nsec = 50 * 1000;  // 50us
     sleep_req.tv_nsec = 1000;  // 1us
     sleep_req.tv_sec = 0;
     int stage = 0;
@@ -168,7 +168,7 @@ void ThreadPool::run_thread(int id_in_pool) {
             delete job;
             sleep_req.tv_nsec = clamp(sleep_req.tv_nsec - 1000, min_sleep_nsec, max_sleep_nsec);
         } else {
-            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec + 10 * 1000, min_sleep_nsec, max_sleep_nsec);
+            sleep_req.tv_nsec = clamp(sleep_req.tv_nsec + 1000, min_sleep_nsec, max_sleep_nsec);
         }
     }
     delete[] steal_order;
