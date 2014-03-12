@@ -157,8 +157,7 @@ public:
         return __sync_val_compare_and_swap(&flag_, cmp_if_eq, new_flag);
     }
     int get() const {
-        __sync_synchronize();
-        return flag_;
+        return __sync_fetch_and_add(&flag_, 0);
     }
 
     operator int() const {

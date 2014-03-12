@@ -34,4 +34,12 @@ TEST(status_flag, bench) {
     t.stop();
     Log::debug("doing %d compare_and_swap took %.2lf sec, op/s = %d",
         n, t.elapsed(), int(n / t.elapsed()));
+
+    t.start();
+    for (int i = 0; i < n; i++) {
+        EXPECT_EQ(sf.get(), 1987);
+    }
+    t.stop();
+    Log::debug("doing %d get took %.2lf sec, op/s = %d",
+        n, t.elapsed(), int(n / t.elapsed()));
 }
