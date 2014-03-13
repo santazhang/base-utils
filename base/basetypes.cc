@@ -244,7 +244,7 @@ void Timer::reset() {
 }
 
 double Timer::elapsed() const {
-    verify(begin_.tv_sec != 0 && begin_.tv_usec != 0);
+    verify(begin_.tv_sec != 0 || begin_.tv_usec != 0);
     if (end_.tv_sec == 0 && end_.tv_usec == 0) {
         // not stopped yet
         struct timeval now;
