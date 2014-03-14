@@ -146,29 +146,4 @@ public:
     }
 };
 
-// atomic status flag
-class StatusFlag {
-    volatile int flag_;
-public:
-    explicit StatusFlag(int init_flag = 0): flag_(init_flag) {}
-    explicit StatusFlag(const StatusFlag& sf): flag_(sf.get()) {}
-
-    int compare_and_swap(int cmp_if_eq, int new_flag) {
-        return __sync_val_compare_and_swap(&flag_, cmp_if_eq, new_flag);
-    }
-    int get() const {
-        return __sync_fetch_and_add(&flag_, 0);
-    }
-
-    operator int() const {
-        return get();
-    }
-    StatusFlag& operator =(const StatusFlag& other) {
-        if (&other != this) {
-            flag_ = other.get();
-        }
-        return *this;
-    }
-};
-
 } // namespace base
