@@ -1,7 +1,7 @@
 #pragma once
 
 #include "basetypes.h"
-#include "defs.h"
+#include "debugging.h"
 #include "logging.h"
 #include "misc.h"
 #include "strop.h"
