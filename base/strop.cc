@@ -51,6 +51,21 @@ std::string format_decimal(double val) {
     return str;
 }
 
+std::string format_decimal(int val) {
+    std::ostringstream o;
+    o << val;
+    std::string s(o.str());
+    std::string str;
+    str.reserve(s.size() + 8);
+    for (size_t i = 0; i < s.size(); i++) {
+        if ((s.size() - i) % 3 == 0 && i != 0 && s[i - 1] != '-') {
+            str += ',';
+        }
+        str += s[i];
+    }
+    return str;
+}
+
 std::vector<std::string> strsplit(const std::string& str, const char sep /* =? */) {
     std::vector<std::string> split;
     size_t begin, end;

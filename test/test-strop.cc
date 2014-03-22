@@ -17,19 +17,34 @@ TEST(strop, format_decimal) {
     EXPECT_EQ(format_decimal(0.004), "0.00");
     EXPECT_EQ(format_decimal(-0.005), "-0.01");
     EXPECT_EQ(format_decimal(0.005), "0.01");
-    EXPECT_EQ(format_decimal(0), "0.00");
-    EXPECT_EQ(format_decimal(1000), "1,000.00");
-    EXPECT_EQ(format_decimal(-1000), "-1,000.00");
+    EXPECT_EQ(format_decimal(0.0), "0.00");
+    EXPECT_EQ(format_decimal(1000.0), "1,000.00");
+    EXPECT_EQ(format_decimal(-1000.0), "-1,000.00");
     EXPECT_EQ(format_decimal(-12.345), "-12.35");
     EXPECT_EQ(format_decimal(12.345), "12.35");
     EXPECT_EQ(format_decimal(123.45), "123.45");
     EXPECT_EQ(format_decimal(1234.5), "1,234.50");
-    EXPECT_EQ(format_decimal(1234567890), "1,234,567,890.00");
-    EXPECT_EQ(format_decimal(123456789), "123,456,789.00");
-    EXPECT_EQ(format_decimal(12345678), "12,345,678.00");
-    EXPECT_EQ(format_decimal(-1234567890), "-1,234,567,890.00");
-    EXPECT_EQ(format_decimal(-123456789), "-123,456,789.00");
-    EXPECT_EQ(format_decimal(-12345678), "-12,345,678.00");
+    EXPECT_EQ(format_decimal(1234567890.0), "1,234,567,890.00");
+    EXPECT_EQ(format_decimal(123456789.0), "123,456,789.00");
+    EXPECT_EQ(format_decimal(12345678.0), "12,345,678.00");
+    EXPECT_EQ(format_decimal(-1234567890.0), "-1,234,567,890.00");
+    EXPECT_EQ(format_decimal(-123456789.0), "-123,456,789.00");
+    EXPECT_EQ(format_decimal(-12345678.0), "-12,345,678.00");
+
+    EXPECT_EQ(format_decimal(-0), "0");
+    EXPECT_EQ(format_decimal(0), "0");
+    EXPECT_EQ(format_decimal(1000), "1,000");
+    EXPECT_EQ(format_decimal(-1000), "-1,000");
+    EXPECT_EQ(format_decimal(-12), "-12");
+    EXPECT_EQ(format_decimal(12), "12");
+    EXPECT_EQ(format_decimal(123), "123");
+    EXPECT_EQ(format_decimal(1234), "1,234");
+    EXPECT_EQ(format_decimal(1234567890), "1,234,567,890");
+    EXPECT_EQ(format_decimal(123456789), "123,456,789");
+    EXPECT_EQ(format_decimal(12345678), "12,345,678");
+    EXPECT_EQ(format_decimal(-1234567890), "-1,234,567,890");
+    EXPECT_EQ(format_decimal(-123456789), "-123,456,789");
+    EXPECT_EQ(format_decimal(-12345678), "-12,345,678");
 }
 
 TEST(strop, strsplit) {
