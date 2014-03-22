@@ -1,3 +1,5 @@
+#include <iostream>
+#include <sstream>
 #include <string.h>
 
 #include "strop.h"
@@ -20,6 +22,33 @@ bool endswith(const char* str, const char* tail) {
         return false;
     }
     return strncmp(str + (len_str - len_tail), tail, len_tail) == 0;
+}
+
+std::string format_decimal(double val) {
+    std::ostringstream o;
+    o.precision(2);
+    o << std::fixed << val;
+    std::string s(o.str());
+    std::string str;
+    size_t idx = 0;
+    while (idx < s.size()) {
+        if (s[idx] == '.') {
+            break;
+        }
+        idx++;
+    }
+    str.reserve(s.size() + 16);
+    for (size_t i = 0; i < idx; i++) {
+        if ((idx - i) % 3 == 0 && i != 0 && s[i - 1] != '-') {
+            str += ',';
+        }
+        str += s[i];
+    }
+    str += s.substr(idx);
+    if (str == "-0.00") {
+        str = "0.00";
+    }
+    return str;
 }
 
 std::vector<std::string> strsplit(const std::string& str, const char sep /* =? */) {

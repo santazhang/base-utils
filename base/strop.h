@@ -11,6 +11,9 @@ namespace base {
 bool startswith(const char* str, const char* head);
 bool endswith(const char* str, const char* head);
 
+// format as -#,###.##
+std::string format_decimal(double val);
+
 std::vector<std::string> strsplit(const std::string& str, const char sep = ' ');
 
 } // namespace base
