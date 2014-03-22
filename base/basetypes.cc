@@ -229,6 +229,7 @@ i64 SparseInt::load_i64(const char* buf) {
 
 
 void Timer::start() {
+    reset();
     gettimeofday(&begin_, nullptr);
 }
 
