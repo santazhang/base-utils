@@ -16,7 +16,7 @@
  * Use verify() when the test is crucial for both debug and release binary.
  */
 #ifdef NDEBUG
-#define verify(expr) do { if (unlikely(!(expr))) { printf("  *** verify failed: %s at %s, line %d\n", #expr, __FILE__, __LINE__); ::base::print_stack_trace(); abort(); } } while (0)
+#define verify(expr) do { if (unlikely(!(expr))) { printf("  *** verify failed: %s at %s, line %d\n", #expr, __FILE__, __LINE__); ::base::print_stack_trace(); ::abort(); } } while (0)
 #else
 #define verify(expr) assert(expr)
 #endif
