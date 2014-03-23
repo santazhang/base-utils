@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include <queue>
 #include <random>
 #include <inttypes.h>
 
@@ -143,6 +145,43 @@ public:
     virtual T next() = 0;
     T operator() () {
         return this->next();
+    }
+};
+
+// keep min-ordering
+template<class T, class Compare = std::greater<T>>
+class MergedEnumerator: public Enumerator<T> {
+    struct merge_helper {
+        T data;
+        Enumerator<T>* src;
+
+        merge_helper(const T& d, Enumerator<T>* s): data(d), src(s) {}
+
+        bool operator < (const merge_helper& other) const {
+            return Compare()(data, other.data);
+        }
+    };
+
+    std::priority_queue<merge_helper, std::vector<merge_helper>> q_;
+
+public:
+    void add_source(Enumerator<T>* src) {
+        if (src->has_next()) {
+            q_.push(merge_helper(src->next(), src));
+        }
+    }
+    bool has_next() {
+        return !q_.empty();
+    }
+    T next() {
+        const merge_helper& mh = q_.top();
+        T ret = mh.data;
+        Enumerator<T>* src = mh.src;
+        q_.pop();
+        if (src->has_next()) {
+            q_.push(merge_helper(src->next(), src));
+        }
+        return ret;
     }
 };
 

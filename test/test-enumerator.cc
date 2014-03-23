@@ -23,3 +23,14 @@ TEST(enumer, int_range_enum) {
         Log::debug("range enumerator: %d", rng());
     }
 }
+
+TEST(enumer, merged_enum) {
+    IntRange src1(5);
+    IntRange src2(15);
+    MergedEnumerator<int> me;
+    me.add_source(&src1);
+    me.add_source(&src2);
+    while (me) {
+        Log::debug("merged enumerator: %d", me());
+    }
+}
