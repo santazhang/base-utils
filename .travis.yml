@@ -1,1 +1,1 @@
-script: "./waf configure ; ./waf"
+script: "./waf configure ; ./waf ; ./build/unittest"
