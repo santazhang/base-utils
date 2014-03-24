@@ -17,7 +17,6 @@ TEST(runlater, basic_usage) {
     });
     Log::info("max wait = %.3lf seconds!", rl->max_wait());
     rl->release();
-    new int(2);
 }
 
 
