@@ -72,7 +72,7 @@ inline NoCopy::~NoCopy() {}
 class RefCounted: public NoCopy {
     volatile int refcnt_;
 protected:
-    virtual ~RefCounted() {}
+    virtual ~RefCounted() = 0;
 public:
     RefCounted(): refcnt_(1) {}
     int ref_count() {
@@ -90,6 +90,7 @@ public:
         }
     }
 };
+inline RefCounted::~RefCounted() {}
 
 class Counter: public NoCopy {
     volatile i64 next_;
