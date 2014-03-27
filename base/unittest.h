@@ -11,6 +11,7 @@ class TestCase {
     int failures_;
 public:
     TestCase(const char* _group, const char* _name): group_(_group), name_(_name), failures_(0) { }
+    virtual ~TestCase() {}
     virtual void run() = 0;
     const char* group() { return group_; }
     const char* name() { return name_; }

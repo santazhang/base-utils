@@ -123,6 +123,11 @@ int TestMgr::run(int argc, char* argv[]) {
         }
     }
     Log::info("%d/%lu passed, %d failures\n", passed, selected.size(), failures);
+    // cleanup testcases
+    for (auto& t : tests_) {
+        delete t;
+    }
+    delete this;
     return failures;
 }
 
