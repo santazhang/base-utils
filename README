@@ -6,7 +6,7 @@ What is included
 
 This is a library of C++ code that I found frequently useful. In it you will find:
 
- * Integer types with explicit size: `i8, i16, i32, i64`... (shorter than int*_t)
+ * Integer types with explicit size: `i8, i16, i32, i64...` (shorter than int*_t)
  * Inherit from `NoCopy` and you got a non-copiable class
  * Inherit from `RefCounted` and you got a class with reference counting
  * `Counter, Timer, Rand`, easy to use
