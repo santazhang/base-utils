@@ -28,6 +28,8 @@ void time_now_str(char* now);
 
 int get_ncpu();
 
+const char* get_exec_path();
+
 // This template function declaration is used in defining arraysize.
 // Note that the function doesn't need an implementation, as we only
 // use its type.

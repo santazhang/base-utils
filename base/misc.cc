@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <time.h>
+#include <limits.h>
 #include <unistd.h>
 #include <sys/time.h>
 
@@ -45,6 +46,23 @@ void time_now_str(char* now) {
 
 int get_ncpu() {
     return sysconf(_SC_NPROCESSORS_ONLN);
+}
+
+const char* get_exec_path() {
+    static char path[PATH_MAX];
+    static bool ready = false;
+    if (!ready) {
+        char link[PATH_MAX];
+        snprintf(link, sizeof(link), "/proc/%d/exe", getpid());
+        int ret = readlink(link, path, sizeof(path));
+        if (ret != -1) {
+            path[ret] = '\0';
+            ready = true;
+        } else {
+            return nullptr;
+        }
+    }
+    return path;
 }
 
 } // namespace base
