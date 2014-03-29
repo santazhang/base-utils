@@ -2,6 +2,7 @@
 #include <time.h>
 #include <limits.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/time.h>
 
 #include "misc.h"
@@ -63,6 +64,18 @@ const char* get_exec_path() {
         }
     }
     return path;
+}
+
+std::string getline(FILE* fp, char delim /* =? */) {
+    char* buf = nullptr;
+    size_t n = 0;
+    ssize_t n_read = ::getdelim(&buf, &n, delim, fp);
+    if (n_read > 0 && buf[n_read - 1] == delim) {
+        n_read--;
+    }
+    std::string line(buf, n_read);
+    free(buf);
+    return line;
 }
 
 } // namespace base

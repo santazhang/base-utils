@@ -11,7 +11,7 @@ This is a library of C++ code that I found frequently useful. In it you will fin
   * Inherit from `RefCounted` and you got a class with reference counting
   * `Counter, Timer, Rand`, easy to use
   * `Enumerator` to represent a stream of data
-  * A `verify()` macro to check invariants (enabled even if -DNDEBUG, unlike assert())
+  * A `verify()` macro to check invariants and print stack trace on failure
   * `Log::debug, Log::info...` for logging at different verbosity levels
   * String manipulation: `streq, startswith, endswith, strsplit...`
   * `Pthread_*` macros to call pthread functions and also verify their return value

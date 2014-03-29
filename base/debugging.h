@@ -23,6 +23,6 @@
 
 namespace base {
 
-void print_stack_trace(FILE* fp = stderr);
+void print_stack_trace(FILE* fp = stderr) __attribute__((noinline));
 
 } // namespace base
