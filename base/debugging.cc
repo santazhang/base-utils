@@ -21,8 +21,7 @@ void print_stack_trace(FILE* fp /* =? */) {
     memset(callstack, 0, sizeof(callstack));
     int frames = backtrace(callstack, max_trace);
 
-    // note that we ignore the first frame: print_stack_trace should not be displayed
-    char **str_frames = backtrace_symbols(callstack + 1, frames - 1);
+    char **str_frames = backtrace_symbols(callstack, frames);
     if (str_frames == nullptr) {
         fprintf(fp, "  *** failed to obtain stack trace!\n");
         return;
@@ -63,8 +62,7 @@ void print_stack_trace(FILE* fp /* =? */) {
     memset(callstack, 0, sizeof(callstack));
     int frames = backtrace(callstack, max_trace);
 
-    // note that we ignore the first frame: print_stack_trace should not be displayed
-    char **str_frames = backtrace_symbols(callstack + 1, frames - 1);
+    char **str_frames = backtrace_symbols(callstack, frames);
     if (str_frames == nullptr) {
         fprintf(fp, "  *** failed to obtain stack trace!\n");
         return;
@@ -101,8 +99,8 @@ void print_stack_trace(FILE* fp /* =? */) {
             fmt_output.push_back(make_pair(str_frames[i], ""));
         }
     }
-    for (int i = 0; i < frames - 1; i++) {
-        fprintf(fp, "%-3d  %s", i, fmt_output[i].first.c_str());
+    for (size_t i = 0; i < frames - 1; i++) {
+        fprintf(fp, "%-3lu  %s", i, fmt_output[i].first.c_str());
         if (fmt_output[i].second.size() > 0) {
             int padding = max_func_length - fmt_output[i].first.size() + 4;
             while (padding > 0) {
