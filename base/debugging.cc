@@ -99,7 +99,7 @@ void print_stack_trace(FILE* fp /* =? */) {
             fmt_output.push_back(make_pair(str_frames[i], ""));
         }
     }
-    for (size_t i = 0; i < frames - 1; i++) {
+    for (size_t i = 0; i < fmt_output.size(); i++) {
         fprintf(fp, "%-3lu  %s", i, fmt_output[i].first.c_str());
         if (fmt_output[i].second.size() > 0) {
             int padding = max_func_length - fmt_output[i].first.size() + 4;
