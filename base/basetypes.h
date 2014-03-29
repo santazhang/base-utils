@@ -82,12 +82,13 @@ public:
         __sync_add_and_fetch(&refcnt_, 1);
         return this;
     }
-    void release() {
+    int release() {
         int r = __sync_sub_and_fetch(&refcnt_, 1);
         verify(r >= 0);
         if (r == 0) {
             delete this;
         }
+        return r;
     }
 };
 inline RefCounted::~RefCounted() {}
