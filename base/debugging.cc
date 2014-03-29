@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include <string>
+#include <vector>
+#include <utility>
 
 #include "debugging.h"
 #include "misc.h"
@@ -70,36 +72,46 @@ void print_stack_trace(FILE* fp /* =? */) {
 
     fprintf(fp, "  *** begin stack trace ***\n");
     const char* exec_path = get_exec_path();
+    vector<pair<string, string>> fmt_output;
+    size_t max_func_length = 0;
     for (int i = 0; i < frames - 1; i++) {
         bool addr2line_ok = false;
         if (exec_path != nullptr) {
-            char buf[PATH_MAX];
-            snprintf(buf, PATH_MAX, "addr2line %p -e %s -f -C 2>&1", callstack[i], exec_path);
-            auto addr2line = popen(buf, "r");
+            char buf[32];
+            snprintf(buf, sizeof(buf), "addr2line %p -e ", callstack[i]);
+            string cmd = buf;
+            cmd += exec_path;
+            cmd += " -f -C 2>&1";
+            auto addr2line = popen(cmd.c_str(), "r");
             if (addr2line) {
                 addr2line_ok = true;
-                int input_counter = 0;
-                while (fgets(buf, sizeof(buf), addr2line)) {
-                    if (buf[0] == '?') {
-                        addr2line_ok = false;
-                        break;
-                    }
-                    buf[strlen(buf) - 1] = '\0'; // remove \n
-                    if (input_counter == 0) {
-                        fprintf(fp, "%-3d  %-50s", i, buf);
-                    } else {
-                        fprintf(fp, "  %s", buf);
-                    }
-                    input_counter++;
-                }
-                if (addr2line_ok) {
-                    fprintf(fp, "\n");
+                string demangled_func_name = getline(addr2line);
+                if (demangled_func_name[0] == '?') {
+                    addr2line_ok = false;
+                } else {
+                    max_func_length = max(max_func_length, demangled_func_name.size());
+                    string file_line = getline(addr2line);
+                    fmt_output.push_back(make_pair(demangled_func_name, file_line));
                 }
                 pclose(addr2line);
             }
         }
         if (!addr2line_ok) {
-            fprintf(fp, "%-3d %s\n", i, str_frames[i]);
+            max_func_length = max(max_func_length, strlen(str_frames[i]));
+            fmt_output.push_back(make_pair(str_frames[i], ""));
+        }
+    }
+    for (int i = 0; i < frames - 1; i++) {
+        fprintf(fp, "%-3d  %s", i, fmt_output[i].first.c_str());
+        if (fmt_output[i].second.size() > 0) {
+            int padding = max_func_length - fmt_output[i].first.size() + 4;
+            while (padding > 0) {
+                padding--;
+                fputc(' ', fp);
+            }
+            fprintf(fp, "%s\n", fmt_output[i].second.c_str());
+        } else {
+            fputc('\n', fp);
         }
     }
 
