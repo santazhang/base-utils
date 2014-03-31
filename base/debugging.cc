@@ -50,6 +50,7 @@ void print_stack_trace(FILE* fp /* =? */) {
         }
     }
     fprintf(fp, "  ***  end stack trace  ***\n");
+    fflush(fp);
 
     free(str_frames);
 }
@@ -114,6 +115,7 @@ void print_stack_trace(FILE* fp /* =? */) {
     }
 
     fprintf(fp, "  ***  end stack trace  ***\n");
+    fflush(fp);
 
     free(str_frames);
 }
