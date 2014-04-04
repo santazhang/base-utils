@@ -170,7 +170,7 @@ public:
     }
 };
 
-class ThreadPool: virtual public RefCounted {
+class ThreadPool: public RefCounted {
     int n_;
     Counter round_robin_;
     pthread_t* th_;
@@ -190,7 +190,7 @@ public:
     int run_async(const std::function<void()>&);
 };
 
-class RunLater: virtual public RefCounted {
+class RunLater: public RefCounted {
     typedef std::pair<double, std::function<void()>*> job_t;
 
     pthread_t th_;
