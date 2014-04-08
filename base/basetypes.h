@@ -7,6 +7,11 @@
 
 #include "debugging.h"
 
+#define MakeNoCopy(cls)     \
+    cls(const cls&) = delete;   \
+    const cls& operator =(const cls&) = delete
+
+
 namespace base {
 
 typedef int8_t i8;
@@ -55,8 +60,7 @@ public:
 };
 
 class NoCopy {
-    NoCopy(const NoCopy&);
-    const NoCopy& operator =(const NoCopy&);
+    MakeNoCopy(NoCopy);
 protected:
     NoCopy() {}
     virtual ~NoCopy() = 0;
