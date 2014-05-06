@@ -15,7 +15,11 @@ FILE* Log::fp_s = stdout;
 // is interrupted by a signal, and then inside the signal handler, Log is
 // called again. Using recursive mutex prevents the thread from deadlocking
 // itself. See issue 11 on github.com/santazhang/simple-rpc
+#ifdef __APPLE__
 pthread_mutex_t Log::m_s = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+#else
+pthread_mutex_t Log::m_s = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#endif // __APPLE__
 
 void Log::set_level(int level) {
     Pthread_mutex_lock(&m_s);
