@@ -187,7 +187,7 @@ public:
     ThreadPool(int n = get_ncpu() * 2);
 
     // return 0 when queuing ok, otherwise EPERM
-    int run_async(const std::function<void()>&);
+    int run_async(const std::function<void()>&, int queuing_channel = -1);
 };
 
 class RunLater: public RefCounted {

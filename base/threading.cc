@@ -89,11 +89,16 @@ ThreadPool::~ThreadPool() {
     delete[] q_;
 }
 
-int ThreadPool::run_async(const std::function<void()>& f) {
+int ThreadPool::run_async(const std::function<void()>& f, int queuing_channel) {
     if (should_stop_) {
         return EPERM;
     }
-    int queue_id = round_robin_.next() % n_;
+    int queue_id;
+    if (queuing_channel >= 0) {
+        queue_id = queuing_channel % n_;
+    } else {
+        queue_id = round_robin_.next() % n_;
+    }
     q_[queue_id].push(new function<void()>(f));
     return 0;
 }

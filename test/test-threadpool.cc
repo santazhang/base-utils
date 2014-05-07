@@ -27,3 +27,22 @@ TEST(threading, empty_threadpool) {
     sleep(n_sec);
     tpool->release();
 }
+
+TEST(threading, thread_queuing_channel) {
+    int n_thread = 4;
+    ThreadPool* tpool = new ThreadPool(n_thread);
+    for (int i = 0; i < n_thread * 2; i++) {
+        tpool->run_async([i] {
+            Log::debug("no queuing channel: step %d", i);
+            sleep(1);
+        });
+    }
+    for (int i = 0; i < n_thread * 2; i++) {
+        const int queuing_channel = 0;
+        tpool->run_async([queuing_channel, i] {
+            Log::debug("with queuing channel = %d: step %d", queuing_channel, i);
+            sleep(1);
+        }, queuing_channel);
+    }
+    tpool->release();
+}
