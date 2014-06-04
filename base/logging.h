@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include <stdarg.h>
+
 #include "misc.h"
 
 #define Log_debug(msg, ...) ::base::Log::debug(__LINE__, __FILE__, msg, ## __VA_ARGS__)
@@ -62,6 +64,7 @@ enum class LogLevel {
 class LogEntry {
     MAKE_NOCOPY(LogEntry);
 public:
+
     LogEntry(LogLevel level, const char* file, int line): level_(level), file_(file), line_(line) {}
     ~LogEntry();
 
@@ -74,6 +77,10 @@ public:
     void operator() (const char* fmt, ...);
 
 private:
+
+    void do_log(const char* fmt, ...);
+    void do_vlog(const char* fmt, va_list args);
+
     LogLevel level_;
     const char* file_;
     int line_;

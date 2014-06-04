@@ -165,16 +165,29 @@ void Log::debug(const char* fmt, ...) {
 
 // NEW API
 void LogEntry::operator() (const char* fmt, ...) {
-    char now_str[TIME_NOW_STR_SIZE];
-    time_now_str(now_str);
     va_list args;
     va_start(args, fmt);
+    do_vlog(fmt, args);
+    va_end(args);
+}
+
+void LogEntry::do_log(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    do_vlog(fmt, args);
+    va_end(args);
+}
+
+void LogEntry::do_vlog(const char* fmt, va_list args) {
+    char now_str[TIME_NOW_STR_SIZE];
+    time_now_str(now_str);
+
     Pthread_mutex_lock(&log_mutex);
     printf("%c %s | ", log_indicator[int(level_)], now_str);
     vprintf(fmt, args);
     printf("\n");
     Pthread_mutex_unlock(&log_mutex);
-    va_end(args);
+
     if (level_ == LogLevel::FATAL) {
         print_stack_trace();
     }
@@ -182,14 +195,7 @@ void LogEntry::operator() (const char* fmt, ...) {
 
 LogEntry::~LogEntry() {
     if (!content_.str().empty()) {
-        char now_str[TIME_NOW_STR_SIZE];
-        time_now_str(now_str);
-        Pthread_mutex_lock(&log_mutex);
-        printf("%c %s | %s\n", log_indicator[int(level_)], now_str, content_.str().c_str());
-        Pthread_mutex_unlock(&log_mutex);
-        if (level_ == LogLevel::FATAL) {
-            print_stack_trace();
-        }
+        do_log("%s", content_.str().c_str());
     }
 }
 
