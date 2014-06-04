@@ -1,37 +1,46 @@
 #include <stdarg.h>
 #include <string.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #include "misc.h"
 #include "threading.h"
 #include "logging.h"
+
+namespace {
+
+// Serialize printing logs to prevent mangled output in multithread applications.
+//
+// Using recursive mutex, because it might be possible that a Log operation
+// is interrupted by a signal, and then inside the signal handler, Log is
+// called again. Using recursive mutex prevents the thread from deadlocking
+// itself. See issue 11 on github.com/santazhang/simple-rpc
+#ifdef __APPLE__
+pthread_mutex_t log_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+#else
+pthread_mutex_t log_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#endif // __APPLE__
+
+} // namespace
+
 
 namespace base {
 
 int Log::level_s = Log::DEBUG;
 FILE* Log::fp_s = stdout;
 
-// Using recursive mutex, because it might be possible that a Log operation
-// is interrupted by a signal, and then inside the signal handler, Log is
-// called again. Using recursive mutex prevents the thread from deadlocking
-// itself. See issue 11 on github.com/santazhang/simple-rpc
-#ifdef __APPLE__
-pthread_mutex_t Log::m_s = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-#else
-pthread_mutex_t Log::m_s = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-#endif // __APPLE__
 
 void Log::set_level(int level) {
-    Pthread_mutex_lock(&m_s);
+    Pthread_mutex_lock(&log_mutex);
     level_s = level;
-    Pthread_mutex_unlock(&m_s);
+    Pthread_mutex_unlock(&log_mutex);
 }
 
 void Log::set_file(FILE* fp) {
     verify(fp != nullptr);
-    Pthread_mutex_lock(&m_s);
+    Pthread_mutex_lock(&log_mutex);
     fp_s = fp;
-    Pthread_mutex_unlock(&m_s);
+    Pthread_mutex_unlock(&log_mutex);
 }
 
 static const char* basename(const char* fpath) {
@@ -57,7 +66,7 @@ void Log::log_v(int level, int line, const char* file, const char* fmt, va_list 
     if (level <= level_s) {
         const char* filebase = basename(file);
         char now_str[TIME_NOW_STR_SIZE];
-        Pthread_mutex_lock(&m_s);
+        Pthread_mutex_lock(&log_mutex);
         time_now_str(now_str);
         fprintf(fp_s, "%c ", indicator[level]);
         if (filebase != nullptr) {
@@ -66,7 +75,7 @@ void Log::log_v(int level, int line, const char* file, const char* fmt, va_list 
         fprintf(fp_s, "%s | ", now_str);
         vfprintf(fp_s, fmt, args);
         fprintf(fp_s, "\n");
-        Pthread_mutex_unlock(&m_s);
+        Pthread_mutex_unlock(&log_mutex);
         fflush(fp_s);
     }
 }
@@ -151,4 +160,20 @@ void Log::debug(const char* fmt, ...) {
     va_end(args);
 }
 
+
+// NEW API
+
+LogEntry::~LogEntry() {
+    static char indicator[] = { 'F', 'E', 'W', 'I' };
+    char now_str[TIME_NOW_STR_SIZE];
+    time_now_str(now_str);
+    Pthread_mutex_lock(&log_mutex);
+    printf("%c %s | %s\n", indicator[int(level_)], now_str, content_.str().c_str());
+    Pthread_mutex_unlock(&log_mutex);
+    if (level_ == LogLevel::FATAL) {
+        print_stack_trace();
+    }
+}
+
 } // namespace base
+

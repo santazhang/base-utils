@@ -5,6 +5,10 @@
 
 #include <string>
 
+#define MAKE_NOCOPY(Class) \
+    Class(const Class&) = delete; \
+    Class& operator = (const Class&) = delete
+
 namespace base {
 
 inline uint64_t rdtsc() {

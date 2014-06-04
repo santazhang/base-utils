@@ -1,6 +1,8 @@
 #pragma once
 
-#include "threading.h"
+#include <sstream>
+
+#include "misc.h"
 
 #define Log_debug(msg, ...) ::base::Log::debug(__LINE__, __FILE__, msg, ## __VA_ARGS__)
 #define Log_info(msg, ...) ::base::Log::info(__LINE__, __FILE__, msg, ## __VA_ARGS__)
@@ -8,14 +10,18 @@
 #define Log_error(msg, ...) ::base::Log::error(__LINE__, __FILE__, msg, ## __VA_ARGS__)
 #define Log_fatal(msg, ...) ::base::Log::fatal(__LINE__, __FILE__, msg, ## __VA_ARGS__)
 
+// NEW API
+
+#define LOG_INFO ::base::LogEntry(::base::LogLevel::INFO, __FILE__, __LINE__)
+#define LOG_WARN ::base::LogEntry(::base::LogLevel::WARN, __FILE__, __LINE__)
+#define LOG_ERROR ::base::LogEntry(::base::LogLevel::ERROR, __FILE__, __LINE__)
+#define LOG_FATAL ::base::LogEntry(::base::LogLevel::FATAL, __FILE__, __LINE__)
+
 namespace base {
 
 class Log {
     static int level_s;
     static FILE* fp_s;
-
-    // have to use pthread mutex because Mutex class cannot be init'ed correctly as static var
-    static pthread_mutex_t m_s;
 
     static void log_v(int level, int line, const char* file, const char* fmt, va_list args);
 public:
@@ -42,4 +48,33 @@ public:
     static void debug(const char* fmt, ...);
 };
 
+
+// NEW API
+enum class LogLevel {
+    FATAL = 0,
+    ERROR = 1,
+    WARN = 2,
+    INFO = 3,
+};
+
+class LogEntry {
+    MAKE_NOCOPY(LogEntry);
+public:
+    LogEntry(LogLevel level, const char* file, int line): level_(level), file_(file), line_(line) {}
+    ~LogEntry();
+
+    template <typename T>
+    LogEntry& operator<< (const T& t) {
+        content_ << t;
+        return *this;
+    }
+
+private:
+    LogLevel level_;
+    const char* file_;
+    int line_;
+    std::ostringstream content_;
+};
+
 } // namespace base
+
