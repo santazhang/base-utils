@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BASE_LOGGING_H_
+#define BASE_LOGGING_H_
 
 #include <sstream>
 
@@ -88,4 +89,6 @@ private:
 };
 
 } // namespace base
+
+#endif // BASE_LOGGING_H_
 
