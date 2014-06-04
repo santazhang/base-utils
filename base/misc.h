@@ -28,8 +28,8 @@ inline T clamp(const T& v, const T1& lower, const T2& upper) {
     return v;
 }
 
-// YYYY-MM-DD HH:MM:SS.mmm, 24 bytes required for now
-#define TIME_NOW_STR_SIZE 24
+// YYYY-MM-DD HH:MM:SS.uuuuuu, 27 bytes required for now
+#define TIME_NOW_STR_SIZE 27
 void time_now_str(char* now);
 
 int get_ncpu();

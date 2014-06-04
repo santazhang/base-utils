@@ -41,8 +41,8 @@ void time_now_str(char* now) {
     now[19] = '.';
     timeval tv;
     gettimeofday(&tv, nullptr);
-    make_int(now + 20, tv.tv_usec / 1000, 3);
-    now[23] = '\0';
+    make_int(now + 20, tv.tv_usec, 6);
+    now[26] = '\0';
 }
 
 int get_ncpu() {
