@@ -25,5 +25,8 @@ TEST(logging, basic_op) {
     ostringstream ostr;
     ostr << vec << endl;
     LOG_INFO << vector<int>({1, 2, 3});
+
+    LOG_INFO("%s ~ %d", "hello", 1987);
+    Log_info("%s ~ %d", "hello", 1987);
 }
 

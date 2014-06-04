@@ -16,10 +16,12 @@ namespace {
 // called again. Using recursive mutex prevents the thread from deadlocking
 // itself. See issue 11 on github.com/santazhang/simple-rpc
 #ifdef __APPLE__
-pthread_mutex_t log_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+static pthread_mutex_t log_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 #else
-pthread_mutex_t log_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+static pthread_mutex_t log_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 #endif // __APPLE__
+
+static char log_indicator[] = { 'F', 'E', 'W', 'I', 'D' };
 
 } // namespace
 
@@ -162,16 +164,32 @@ void Log::debug(const char* fmt, ...) {
 
 
 // NEW API
-
-LogEntry::~LogEntry() {
-    static char indicator[] = { 'F', 'E', 'W', 'I' };
+void LogEntry::operator() (const char* fmt, ...) {
     char now_str[TIME_NOW_STR_SIZE];
     time_now_str(now_str);
+    va_list args;
+    va_start(args, fmt);
     Pthread_mutex_lock(&log_mutex);
-    printf("%c %s | %s\n", indicator[int(level_)], now_str, content_.str().c_str());
+    printf("%c %s | ", log_indicator[int(level_)], now_str);
+    vprintf(fmt, args);
+    printf("\n");
     Pthread_mutex_unlock(&log_mutex);
+    va_end(args);
     if (level_ == LogLevel::FATAL) {
         print_stack_trace();
+    }
+}
+
+LogEntry::~LogEntry() {
+    if (!content_.str().empty()) {
+        char now_str[TIME_NOW_STR_SIZE];
+        time_now_str(now_str);
+        Pthread_mutex_lock(&log_mutex);
+        printf("%c %s | %s\n", log_indicator[int(level_)], now_str, content_.str().c_str());
+        Pthread_mutex_unlock(&log_mutex);
+        if (level_ == LogLevel::FATAL) {
+            print_stack_trace();
+        }
     }
 }
 

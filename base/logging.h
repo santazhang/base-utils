@@ -5,10 +5,6 @@
 #include "misc.h"
 
 #define Log_debug(msg, ...) ::base::Log::debug(__LINE__, __FILE__, msg, ## __VA_ARGS__)
-#define Log_info(msg, ...) ::base::Log::info(__LINE__, __FILE__, msg, ## __VA_ARGS__)
-#define Log_warn(msg, ...) ::base::Log::warn(__LINE__, __FILE__, msg, ## __VA_ARGS__)
-#define Log_error(msg, ...) ::base::Log::error(__LINE__, __FILE__, msg, ## __VA_ARGS__)
-#define Log_fatal(msg, ...) ::base::Log::fatal(__LINE__, __FILE__, msg, ## __VA_ARGS__)
 
 // NEW API
 
@@ -16,6 +12,12 @@
 #define LOG_WARN ::base::LogEntry(::base::LogLevel::WARN, __FILE__, __LINE__)
 #define LOG_ERROR ::base::LogEntry(::base::LogLevel::ERROR, __FILE__, __LINE__)
 #define LOG_FATAL ::base::LogEntry(::base::LogLevel::FATAL, __FILE__, __LINE__)
+
+// support old logging api
+#define Log_info(msg, ...) LOG_INFO(msg, ## __VA_ARGS__)
+#define Log_warn(msg, ...) LOG_WARN(msg, ## __VA_ARGS__)
+#define Log_error(msg, ...) LOG_ERROR(msg, ## __VA_ARGS__)
+#define Log_fatal(msg, ...) LOG_FATAL(msg, ## __VA_ARGS__)
 
 namespace base {
 
@@ -68,6 +70,8 @@ public:
         content_ << t;
         return *this;
     }
+
+    void operator() (const char* fmt, ...);
 
 private:
     LogLevel level_;
