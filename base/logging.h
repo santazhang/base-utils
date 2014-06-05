@@ -54,6 +54,7 @@
     !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & FATAL
 
 // for compatibility
+#define Log_debug LOG(1)
 #define Log_info INFO
 #define Log_warn WARN
 #define Log_error ERROR
