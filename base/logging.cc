@@ -164,21 +164,14 @@ void Log::debug(const char* fmt, ...) {
 
 
 // NEW API
-void LogEntry::operator() (const char* fmt, ...) {
+void LogManager::operator() (const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    do_vlog(fmt, args);
+    vlog(fmt, args);
     va_end(args);
 }
 
-void LogEntry::do_log(const char* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    do_vlog(fmt, args);
-    va_end(args);
-}
-
-void LogEntry::do_vlog(const char* fmt, va_list args) {
+void LogManager::vlog(const char* fmt, va_list args) {
     char now_str[TIME_NOW_STR_SIZE];
     time_now_str(now_str);
 
@@ -193,11 +186,18 @@ void LogEntry::do_vlog(const char* fmt, va_list args) {
     }
 }
 
-LogEntry::~LogEntry() {
-    if (!content_.str().empty()) {
-        do_log("%s", content_.str().c_str());
+LogHelper::~LogHelper() {
+    rep_->ref--;
+    if (rep_->ref == 0) {
+        (*rep_->lm)("%s", rep_->buf.str().c_str());
+        delete rep_;
     }
 }
+
+LogManager INFO(LogLevel::INFO, dont_create_your_own__());
+LogManager WARN(LogLevel::WARN, dont_create_your_own__());
+LogManager ERROR(LogLevel::ERROR, dont_create_your_own__());
+LogManager FATAL(LogLevel::FATAL, dont_create_your_own__());
 
 } // namespace base
 

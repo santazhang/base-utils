@@ -11,10 +11,10 @@
 
 // NEW API
 
-#define LOG_INFO ::base::LogEntry(::base::LogLevel::INFO, __FILE__, __LINE__)
-#define LOG_WARN ::base::LogEntry(::base::LogLevel::WARN, __FILE__, __LINE__)
-#define LOG_ERROR ::base::LogEntry(::base::LogLevel::ERROR, __FILE__, __LINE__)
-#define LOG_FATAL ::base::LogEntry(::base::LogLevel::FATAL, __FILE__, __LINE__)
+#define LOG_INFO ::base::INFO
+#define LOG_WARN ::base::WARN
+#define LOG_ERROR ::base::ERROR
+#define LOG_FATAL ::base::FATAL
 
 // support old logging api
 #define Log_info(msg, ...) LOG_INFO(msg, ## __VA_ARGS__)
@@ -62,31 +62,60 @@ enum class LogLevel {
     INFO = 3,
 };
 
-class LogEntry {
-    MAKE_NOCOPY(LogEntry);
+struct dont_create_your_own__ {};
+
+class LogManager {
+    MAKE_NOCOPY(LogManager);
 public:
-
-    LogEntry(LogLevel level, const char* file, int line): level_(level), file_(file), line_(line) {}
-    ~LogEntry();
-
-    template <typename T>
-    LogEntry& operator<< (const T& t) {
-        content_ << t;
-        return *this;
-    }
+    LogManager(LogLevel level, dont_create_your_own__): level_(level) {}
 
     void operator() (const char* fmt, ...);
+private:
+    void vlog(const char* fmt, va_list args);
+    LogLevel level_;
+};
+
+class LogHelper {
+public:
+    LogHelper(LogManager* lm) {
+        rep_ = new rep;
+        rep_->lm = lm;
+    }
+    LogHelper(const LogHelper& o): rep_(o.rep_) {
+        rep_->ref++;
+    }
+    ~LogHelper();
+
+    void operator= (const LogHelper&) = delete;
+
+    std::ostream& stream() {
+        return rep_->buf;
+    }
 
 private:
 
-    void do_log(const char* fmt, ...);
-    void do_vlog(const char* fmt, va_list args);
-
-    LogLevel level_;
-    const char* file_;
-    int line_;
-    std::ostringstream content_;
+    struct rep {
+        int ref = 1;
+        LogManager* lm = nullptr;
+        std::ostringstream buf;
+    };
+    rep* rep_ = nullptr;
 };
+
+template <class T>
+LogHelper operator<< (LogManager& lm, const T& t) {
+    LogHelper lh(&lm);
+    lh << t;
+    return lh;
+}
+
+template <class T>
+LogHelper operator<< (LogHelper lh, const T& t) {
+    lh.stream() << t;
+    return lh;
+}
+
+extern LogManager INFO, WARN, ERROR, FATAL;
 
 } // namespace base
 
