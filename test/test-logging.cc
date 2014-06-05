@@ -42,8 +42,13 @@ TEST(logging, basic_op) {
     INFO << "a simple log" << 123 << vec;
     WARN << vec << 234;
 
-    WARN_IF(3 < 2) << heavy_slow_func();
-    INFO_IF(1 > 0) << 2;
-    INFO_IF(-1 > 0) << 2 << heavy_slow_func();
+    WARN_IF(3 < 2) << heavy_slow_func() << "this will not display";
+    DINFO_IF(1 > 0) << 2 << " this will show";
+    INFO_IF(-1 > 0) << 2 << heavy_slow_func() << " this will not show";
+
+    DLOG(1) << "level 1";
+    LOG_IF(2, 4 < 5) << "level " << 2;
+    DINFO << "hi" << heavy_slow_func();
+    DINFO("%d", heavy_slow_func());
 }
 
