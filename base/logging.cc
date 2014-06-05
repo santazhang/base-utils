@@ -171,6 +171,14 @@ void LogManager::operator() (const char* fmt, ...) {
     va_end(args);
 }
 
+LogHelper LogManager::when(bool should_log) {
+    LogHelper lh(this);
+    if (!should_log) {
+        lh.disable();
+    }
+    return lh;
+}
+
 void LogManager::vlog(const char* fmt, va_list args) {
     char now_str[TIME_NOW_STR_SIZE];
     time_now_str(now_str);
@@ -189,7 +197,10 @@ void LogManager::vlog(const char* fmt, va_list args) {
 LogHelper::~LogHelper() {
     rep_->ref--;
     if (rep_->ref == 0) {
-        (*rep_->lm)("%s", rep_->buf.str().c_str());
+        if (rep_->buf != nullptr) {
+            (*rep_->lm)("%s", rep_->buf->str().c_str());
+        }
+        delete rep_->buf;
         delete rep_;
     }
 }

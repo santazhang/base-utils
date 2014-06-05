@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -19,6 +21,11 @@ ostream& operator <<(ostream& os, const vector<T>& vec) {
 
 }
 
+static int heavy_slow_func() {
+    ::sleep(1);
+    return 1;
+}
+
 TEST(logging, basic_op) {
     vector<int> vec({1, 2, 3});
     LOG_INFO << "A simple log" << " at INFO level " << vector<int>({1, 2, 3});
@@ -35,5 +42,8 @@ TEST(logging, basic_op) {
 
     INFO << "a simple log" << 123 << vec;
     WARN << vec << 234;
+
+    INFO.when(1 > 0) << "a simple log" << 123 << vec;
+    WARN.when(1 < 0) << vec << 234 << heavy_slow_func();
 }
 

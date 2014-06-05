@@ -17,10 +17,10 @@
 #define LOG_FATAL ::base::FATAL
 
 // support old logging api
-#define Log_info(msg, ...) LOG_INFO(msg, ## __VA_ARGS__)
-#define Log_warn(msg, ...) LOG_WARN(msg, ## __VA_ARGS__)
-#define Log_error(msg, ...) LOG_ERROR(msg, ## __VA_ARGS__)
-#define Log_fatal(msg, ...) LOG_FATAL(msg, ## __VA_ARGS__)
+#define Log_info(msg, ...) ::base::INFO(msg, ## __VA_ARGS__)
+#define Log_warn(msg, ...) ::base::WARN(msg, ## __VA_ARGS__)
+#define Log_error(msg, ...) ::base::ERROR(msg, ## __VA_ARGS__)
+#define Log_fatal(msg, ...) ::base::FATAL(msg, ## __VA_ARGS__)
 
 namespace base {
 
@@ -55,24 +55,13 @@ public:
 
 
 // NEW API
+class LogManager;
+
 enum class LogLevel {
     FATAL = 0,
     ERROR = 1,
     WARN = 2,
     INFO = 3,
-};
-
-struct dont_create_your_own__ {};
-
-class LogManager {
-    MAKE_NOCOPY(LogManager);
-public:
-    LogManager(LogLevel level, dont_create_your_own__): level_(level) {}
-
-    void operator() (const char* fmt, ...);
-private:
-    void vlog(const char* fmt, va_list args);
-    LogLevel level_;
 };
 
 class LogHelper {
@@ -88,19 +77,46 @@ public:
 
     void operator= (const LogHelper&) = delete;
 
-    std::ostream& stream() {
+    std::ostream* stream() {
+        if (!rep_->disabled && rep_->buf == nullptr) {
+            rep_->buf = new std::ostringstream;
+        }
         return rep_->buf;
+    }
+
+    void disable() {
+        rep_->disabled = true;
+    }
+
+    bool disabled() const {
+        return rep_->disabled;
     }
 
 private:
 
     struct rep {
         int ref = 1;
+        bool disabled = false;
         LogManager* lm = nullptr;
-        std::ostringstream buf;
+        std::ostringstream* buf = nullptr;
     };
     rep* rep_ = nullptr;
 };
+
+struct dont_create_your_own__ {};
+
+class LogManager {
+    MAKE_NOCOPY(LogManager);
+public:
+    LogManager(LogLevel level, dont_create_your_own__): level_(level) {}
+
+    void operator() (const char* fmt, ...);
+    LogHelper when(bool should_log);
+private:
+    void vlog(const char* fmt, va_list args);
+    LogLevel level_;
+};
+
 
 template <class T>
 LogHelper operator<< (LogManager& lm, const T& t) {
@@ -111,7 +127,9 @@ LogHelper operator<< (LogManager& lm, const T& t) {
 
 template <class T>
 LogHelper operator<< (LogHelper lh, const T& t) {
-    lh.stream() << t;
+    if (!lh.disabled()) {
+        *lh.stream() << t;
+    }
     return lh;
 }
 
