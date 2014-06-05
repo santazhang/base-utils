@@ -9,18 +9,11 @@
 
 #define Log_debug(msg, ...) ::base::Log::debug(__LINE__, __FILE__, msg, ## __VA_ARGS__)
 
-// NEW API
-
-#define LOG_INFO ::base::INFO
-#define LOG_WARN ::base::WARN
-#define LOG_ERROR ::base::ERROR
-#define LOG_FATAL ::base::FATAL
-
-// support old logging api
-#define Log_info(msg, ...) ::base::INFO(msg, ## __VA_ARGS__)
-#define Log_warn(msg, ...) ::base::WARN(msg, ## __VA_ARGS__)
-#define Log_error(msg, ...) ::base::ERROR(msg, ## __VA_ARGS__)
-#define Log_fatal(msg, ...) ::base::FATAL(msg, ## __VA_ARGS__)
+// compatible code
+#define Log_info(msg, ...) INFO(msg, ## __VA_ARGS__)
+#define Log_warn(msg, ...) WARN(msg, ## __VA_ARGS__)
+#define Log_error(msg, ...) ERROR(msg, ## __VA_ARGS__)
+#define Log_fatal(msg, ...) FATAL(msg, ## __VA_ARGS__)
 
 namespace base {
 
@@ -111,7 +104,6 @@ public:
     LogManager(LogLevel level, dont_create_your_own__): level_(level) {}
 
     void operator() (const char* fmt, ...);
-    LogHelper when(bool should_log);
 private:
     void vlog(const char* fmt, va_list args);
     LogLevel level_;
@@ -133,9 +125,18 @@ LogHelper operator<< (LogHelper lh, const T& t) {
     return lh;
 }
 
-extern LogManager INFO, WARN, ERROR, FATAL;
-
 } // namespace base
+
+extern base::LogManager INFO, WARN, ERROR, FATAL;
+
+#define INFO_IF(cond) \
+    !(cond) ? 0 : INFO
+#define WARN_IF(cond) \
+    !(cond) ? 0 : WARN
+#define ERROR_IF(cond) \
+    !(cond) ? 0 : ERROR
+#define FATAL_IF(cond) \
+    !(cond) ? 0 : FATAL
 
 #endif // BASE_LOGGING_H_
 

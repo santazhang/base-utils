@@ -6,7 +6,6 @@
 
 #include "base/all.h"
 
-using namespace base;
 using namespace std;
 
 namespace std {
@@ -28,22 +27,23 @@ static int heavy_slow_func() {
 
 TEST(logging, basic_op) {
     vector<int> vec({1, 2, 3});
-    LOG_INFO << "A simple log" << " at INFO level " << vector<int>({1, 2, 3});
-    LOG_WARN << "A simple log" << " at WARN level";
-    LOG_ERROR << "A simple log " << 12345 << " at ERROR level";
-    LOG_FATAL << "A simple log " << 'x' << " at FATAL level";
+    INFO << "A simple log" << " at INFO level " << vector<int>({1, 2, 3});
+    WARN << "A simple log" << " at WARN level";
+    ERROR << "A simple log " << 12345 << " at ERROR level";
+    FATAL << "A simple log " << 'x' << " at FATAL level";
     cout << vec << endl;
     ostringstream ostr;
     ostr << vec << endl;
-    LOG_INFO << vector<int>({1, 2, 3});
+    INFO << vector<int>({1, 2, 3});
 
-    LOG_INFO("%s ~ %d", "hello", 1987);
+    INFO("%s ~ %d", "hello", 1987);
     Log_info("%s ~ %d", "hello", 1987);
 
     INFO << "a simple log" << 123 << vec;
     WARN << vec << 234;
 
-    INFO.when(1 > 0) << "a simple log" << 123 << vec;
-    WARN.when(1 < 0) << vec << 234 << heavy_slow_func();
+    WARN_IF(3 < 2) << heavy_slow_func();
+    INFO_IF(1 > 0) << 2;
+    INFO_IF(-1 > 0) << 2 << heavy_slow_func();
 }
 

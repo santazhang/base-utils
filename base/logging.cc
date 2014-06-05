@@ -171,14 +171,6 @@ void LogManager::operator() (const char* fmt, ...) {
     va_end(args);
 }
 
-LogHelper LogManager::when(bool should_log) {
-    LogHelper lh(this);
-    if (!should_log) {
-        lh.disable();
-    }
-    return lh;
-}
-
 void LogManager::vlog(const char* fmt, va_list args) {
     char now_str[TIME_NOW_STR_SIZE];
     time_now_str(now_str);
@@ -205,10 +197,12 @@ LogHelper::~LogHelper() {
     }
 }
 
+} // namespace base
+
+using namespace base;
+
 LogManager INFO(LogLevel::INFO, dont_create_your_own__());
 LogManager WARN(LogLevel::WARN, dont_create_your_own__());
 LogManager ERROR(LogLevel::ERROR, dont_create_your_own__());
 LogManager FATAL(LogLevel::FATAL, dont_create_your_own__());
-
-} // namespace base
 
