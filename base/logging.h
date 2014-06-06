@@ -13,52 +13,52 @@
 #define DEBUG_LOGGING_ON true
 #endif
 
-#define LOG(verbosity) base::LogManager_INFO.new_log(__FILE__, __LINE__, verbosity)
-#define LOG_IF(verbosity, cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG(verbosity)
-#define DLOG(verbosity) \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG(verbosity)
-#define DLOG_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG(verbosity)
+#define LOG_LEVEL(verbosity) base::LogManager_INFO.new_log(__FILE__, __LINE__, verbosity)
+#define LOG_LEVEL_IF(verbosity, cond) \
+    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_LEVEL(verbosity)
+#define DLOG_LEVEL(verbosity) \
+    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_LEVEL(verbosity)
+#define DLOG_LEVEL_IF(cond) \
+    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_LEVEL(verbosity)
 
-#define INFO base::LogManager_INFO.new_log(__FILE__, __LINE__, 0)
-#define INFO_IF(cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & INFO
-#define DINFO \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & INFO
-#define DINFO_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & INFO
+#define LOG_INFO base::LogManager_INFO.new_log(__FILE__, __LINE__, 0)
+#define LOG_INFO_IF(cond) \
+    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_INFO
+#define DLOG_INFO \
+    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_INFO
+#define DLOG_INFO_IF(cond) \
+    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_INFO
 
-#define WARN base::LogManager_WARN.new_log(__FILE__, __LINE__, 0)
-#define WARN_IF(cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & WARN
-#define DWARN \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & WARN
-#define DWARN_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & WARN
+#define LOG_WARN base::LogManager_WARN.new_log(__FILE__, __LINE__, 0)
+#define LOG_WARN_IF(cond) \
+    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_WARN
+#define DLOG_WARN \
+    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_WARN
+#define DLOG_WARN_IF(cond) \
+    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_WARN
 
-#define ERROR base::LogManager_ERROR.new_log(__FILE__, __LINE__, 0)
-#define ERROR_IF(cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & ERROR
-#define DERROR \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & ERROR
-#define DERROR_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & ERROR
+#define LOG_ERROR base::LogManager_ERROR.new_log(__FILE__, __LINE__, 0)
+#define LOG_ERROR_IF(cond) \
+    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_ERROR
+#define DLOG_ERROR \
+    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_ERROR
+#define DLOG_ERROR_IF(cond) \
+    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_ERROR
 
-#define FATAL base::LogManager_FATAL.new_log(__FILE__, __LINE__, 0)
-#define FATAL_IF(cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & FATAL
-#define DFATAL \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & FATAL
-#define DFATAL_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & FATAL
+#define LOG_FATAL base::LogManager_FATAL.new_log(__FILE__, __LINE__, 0)
+#define LOG_FATAL_IF(cond) \
+    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_FATAL
+#define DLOG_FATAL \
+    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_FATAL
+#define DLOG_FATAL_IF(cond) \
+    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_FATAL
 
 // for compatibility
-#define Log_debug LOG(1)
-#define Log_info INFO
-#define Log_warn WARN
-#define Log_error ERROR
-#define Log_fatal FATAL
+#define Log_debug LOG_LEVEL(1)
+#define Log_info LOG_INFO
+#define Log_warn LOG_WARN
+#define Log_error LOG_ERROR
+#define Log_fatal LOG_FATAL
 
 
 namespace base {

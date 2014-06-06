@@ -79,35 +79,35 @@ void Log::vlog(const char* fmt, va_list va) {
 void Log::debug(const char* fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    LOG(1).vlog(fmt, va);
+    LOG_LEVEL(1).vlog(fmt, va);
     va_end(va);
 }
 
 void Log::info(const char* fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    INFO.vlog(fmt, va);
+    LOG_INFO.vlog(fmt, va);
     va_end(va);
 }
 
 void Log::warn(const char* fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    WARN.vlog(fmt, va);
+    LOG_WARN.vlog(fmt, va);
     va_end(va);
 }
 
 void Log::error(const char* fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    ERROR.vlog(fmt, va);
+    LOG_ERROR.vlog(fmt, va);
     va_end(va);
 }
 
 void Log::fatal(const char* fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    FATAL.vlog(fmt, va);
+    LOG_FATAL.vlog(fmt, va);
     va_end(va);
 }
 
