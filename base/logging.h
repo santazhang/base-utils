@@ -2,56 +2,32 @@
 #define BASE_LOGGING_H_
 
 #include <stdarg.h>
-
 #include <sstream>
 
-#include "misc.h"
+#include "base/misc.h"
+#include "base/debugging.h"
 
-#ifdef NDEBUG
-#define DEBUG_LOGGING_ON false
-#else
-#define DEBUG_LOGGING_ON true
-#endif
-
-#define LOG_LEVEL(verbosity) base::LogManager_INFO.new_log(__FILE__, __LINE__, verbosity)
-#define LOG_LEVEL_IF(verbosity, cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_LEVEL(verbosity)
-#define DLOG_LEVEL(verbosity) \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_LEVEL(verbosity)
-#define DLOG_LEVEL_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_LEVEL(verbosity)
-
+#define LOG_VERBOSE(verbosity) base::LogManager_INFO.new_log(__FILE__, __LINE__, verbosity)
 #define LOG_INFO base::LogManager_INFO.new_log(__FILE__, __LINE__, 0)
-#define LOG_INFO_IF(cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_INFO
-#define DLOG_INFO \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_INFO
-#define DLOG_INFO_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_INFO
-
 #define LOG_WARN base::LogManager_WARN.new_log(__FILE__, __LINE__, 0)
-#define LOG_WARN_IF(cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_WARN
-#define DLOG_WARN \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_WARN
-#define DLOG_WARN_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_WARN
-
 #define LOG_ERROR base::LogManager_ERROR.new_log(__FILE__, __LINE__, 0)
-#define LOG_ERROR_IF(cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_ERROR
-#define DLOG_ERROR \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_ERROR
-#define DLOG_ERROR_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_ERROR
-
 #define LOG_FATAL base::LogManager_FATAL.new_log(__FILE__, __LINE__, 0)
-#define LOG_FATAL_IF(cond) \
-    !(cond) ? void(0) : base::hack_for_conditional_logging() & LOG_FATAL
-#define DLOG_FATAL \
-    !(DEBUG_LOGGING_ON) ? void(0) : base::hack_for_conditional_logging() & LOG_FATAL
-#define DLOG_FATAL_IF(cond) \
-    !((DEBUG_LOGGING_ON) && (cond)) ? void(0) : base::hack_for_conditional_logging() & LOG_FATAL
+
+#ifndef likely
+#define likely(x)   __builtin_expect((x), 1)
+#endif // likely
+
+#ifndef unlikely
+#define unlikely(x)   __builtin_expect((x), 0)
+#endif // unlikely
+
+/**
+ * Use assert() when the test is only intended for debugging.
+ * Use verify() when the test is crucial for both debug and release binary.
+ */
+#define verify(invariant) \
+    !(unlikely(!(invariant))) ? void(0) : base::hack_for_conditional_logging() & LOG_FATAL \
+        << "verify(" << (#invariant) << ") failed at " << __FILE__ << ':' << __LINE__ << " in function " << __FUNCTION__
 
 // for compatibility
 #define Log_debug LOG_LEVEL(1)
@@ -60,16 +36,13 @@
 #define Log_error LOG_ERROR
 #define Log_fatal LOG_FATAL
 
-
 namespace base {
 
 class LogManager;
 
 class Log {
     void operator= (const Log&) = delete;
-
 public:
-
     Log(LogManager* lm, const char* file, int line, int verbosity) {
         rep_ = new rep;
         rep_->lm = lm;
@@ -107,7 +80,6 @@ public:
     static void fatal(const char* fmt, ...);
 
 private:
-
     void vlog(const char* fmt, va_list va);
 
     struct rep {
@@ -137,10 +109,7 @@ struct do_not_create_your_own {
 
 class LogManager {
     MAKE_NOCOPY(LogManager);
-
 public:
-
-
     LogManager(char _severity, struct do_not_create_your_own): severity_(_severity) {
     }
 
@@ -153,17 +122,14 @@ public:
     }
 
 private:
-
     char severity_;
 };
 
 
 struct hack_for_conditional_logging {
-
     // from google-glog library
     void operator& (Log) {
     }
-
 };
 
 extern LogManager LogManager_INFO, LogManager_WARN, LogManager_ERROR, LogManager_FATAL;

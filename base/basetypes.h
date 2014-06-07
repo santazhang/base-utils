@@ -6,11 +6,7 @@
 #include <inttypes.h>
 
 #include "debugging.h"
-
-#define MakeNoCopy(cls)     \
-    cls(const cls&) = delete;   \
-    const cls& operator =(const cls&) = delete
-
+#include "base/logging.h"
 
 namespace base {
 
@@ -60,7 +56,7 @@ public:
 };
 
 class NoCopy {
-    MakeNoCopy(NoCopy);
+    MAKE_NOCOPY(NoCopy);
 protected:
     NoCopy() {}
     virtual ~NoCopy() = 0;

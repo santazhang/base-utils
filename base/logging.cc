@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdarg.h>
 #include <string.h>
 #include <sys/time.h>
@@ -34,7 +35,7 @@ static const char* file_basename(const char* fpath) {
         }
         idx--;
     }
-    verify(idx >= 0 && idx < len);
+    assert(idx >= 0 && idx < len);
     return &fpath[idx];
 }
 
@@ -60,7 +61,7 @@ void Log::vlog(const char* fmt, va_list va) {
     char now_str[TIME_NOW_STR_SIZE];
     time_now_str(now_str);
 
-    Pthread_mutex_lock(&log_mutex);
+    pthread_mutex_lock(&log_mutex);
     if (filebase != nullptr) {
         printf("%c %s %s:%d | ", severity, now_str, filebase, rep_->line);
     } else {
@@ -68,18 +69,19 @@ void Log::vlog(const char* fmt, va_list va) {
     }
     vprintf(fmt, va);
     printf("\n");
-    Pthread_mutex_unlock(&log_mutex);
+    pthread_mutex_unlock(&log_mutex);
 
     if (severity == 'F') {
-        // print stack trace for fatal errors
+        // print stack trace for fatal errors, and abort
         print_stack_trace();
+        ::abort();
     }
 }
 
 void Log::debug(const char* fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    LOG_LEVEL(1).vlog(fmt, va);
+    LOG_VERBOSE(1).vlog(fmt, va);
     va_end(va);
 }
 
