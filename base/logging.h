@@ -30,7 +30,7 @@
         << "verify(" << (#invariant) << ") failed at " << __FILE__ << ':' << __LINE__ << " in function " << __FUNCTION__
 
 // for compatibility
-#define Log_debug LOG_LEVEL(1)
+#define Log_debug LOG_VERBOSE(1)
 #define Log_info LOG_INFO
 #define Log_warn LOG_WARN
 #define Log_error LOG_ERROR
