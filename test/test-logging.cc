@@ -42,5 +42,6 @@ TEST(logging, basic_op) {
     LOG_INFO << "a simple log" << 123 << vec;
     LOG_WARN << vec << 234;
     verify(1 > 0) << heavy_slow_func();
+    LOG_NULL << heavy_slow_func();
 }
 

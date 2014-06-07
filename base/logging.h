@@ -12,6 +12,8 @@
 #define LOG_WARN base::LogManager_WARN.new_log(__FILE__, __LINE__, 0)
 #define LOG_ERROR base::LogManager_ERROR.new_log(__FILE__, __LINE__, 0)
 #define LOG_FATAL base::LogManager_FATAL.new_log(__FILE__, __LINE__, 0)
+#define LOG_NULL \
+    true ? void(0) : base::hack_for_conditional_logging() & LOG_INFO
 
 #ifndef likely
 #define likely(x)   __builtin_expect((x), 1)
