@@ -2,6 +2,7 @@
 
 #include "basetypes.h"
 #include "debugging.h"
+#include "errors.h"
 #include "logging.h"
 #include "misc.h"
 #include "strop.h"
