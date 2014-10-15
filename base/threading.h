@@ -1,7 +1,6 @@
 #pragma once
 
-#include <list>
-#include <queue>
+#include <deque>
 #include <functional>
 #include <pthread.h>
 
@@ -110,13 +109,13 @@ private:
  */
 template<class T>
 class Queue: public NoCopy {
-    std::list<T>* q_;
+    std::deque<T> q_;
     pthread_cond_t not_empty_;
     pthread_mutex_t m_;
 
 public:
 
-    Queue(): q_(new std::list<T>) {
+    Queue() {
         Pthread_mutex_init(&m_, nullptr);
         Pthread_cond_init(&not_empty_, nullptr);
     }
@@ -124,12 +123,11 @@ public:
     ~Queue() {
         Pthread_cond_destroy(&not_empty_);
         Pthread_mutex_destroy(&m_);
-        delete q_;
     }
 
     void push(const T& e) {
         Pthread_mutex_lock(&m_);
-        q_->push_back(e);
+        q_.push_back(e);
         Pthread_cond_signal(&not_empty_);
         Pthread_mutex_unlock(&m_);
     }
@@ -137,10 +135,10 @@ public:
     bool try_pop(T* t) {
         bool ret = false;
         Pthread_mutex_lock(&m_);
-        if (!q_->empty()) {
+        if (!q_.empty()) {
             ret = true;
-            *t = q_->front();
-            q_->pop_front();
+            *t = q_.front();
+            q_.pop_front();
         }
         Pthread_mutex_unlock(&m_);
         return ret;
@@ -149,10 +147,10 @@ public:
     bool try_pop_but_ignore(T* t, const T& ignore) {
         bool ret = false;
         Pthread_mutex_lock(&m_);
-        if (!q_->empty() && q_->front() != ignore) {
+        if (!q_.empty() && q_.front() != ignore) {
             ret = true;
-            *t = q_->front();
-            q_->pop_front();
+            *t = q_.front();
+            q_.pop_front();
         }
         Pthread_mutex_unlock(&m_);
         return ret;
@@ -160,11 +158,11 @@ public:
 
     T pop() {
         Pthread_mutex_lock(&m_);
-        while (q_->empty()) {
+        while (q_.empty()) {
             Pthread_cond_wait(&not_empty_, &m_);
         }
-        T e = q_->front();
-        q_->pop_front();
+        T e = q_.front();
+        q_.pop_front();
         Pthread_mutex_unlock(&m_);
         return e;
     }
